@@ -1,67 +1,12 @@
 package andts.javasynth;
 
-import andts.javasynth.oscillator.Oscillator;
+import andts.javasynth.oscillator.OldOscillator;
 import com.sun.media.sound.MixerSourceLine;
 
 import javax.sound.sampled.*;
 import java.io.IOException;
 import java.util.Arrays;
 
-/**
- * <titleabbrev>andts.javasynth.Player</titleabbrev>
- * <title>Playing waveforms</title>
- * <p/>
- * <formalpara><title>Purpose</title>
- * <para>
- * Plays waveforms (sine, square, ...).
- * </para></formalpara>
- * <p/>
- * <formalpara><title>Usage</title>
- * <para>
- * <cmdsynopsis>
- * <command>java andts.javasynth.Player</command>
- * <arg><option>-t <replaceable>waveformtype</replaceable></option></arg>
- * <arg><option>-f <replaceable>signalfrequency</replaceable></option></arg>
- * <arg><option>-r <replaceable>samplerate</replaceable></option></arg>
- * <arg><option>-a <replaceable>amplitude</replaceable></option></arg>
- * </cmdsynopsis>
- * </para>
- * </formalpara>
- * <p/>
- * <formalpara><title>Parameters</title>
- * <variablelist>
- * <varlistentry>
- * <term><option>-t <replaceable>waveformtype</replaceable></option></term>
- * <listitem><para>the waveform to play. One of sine, sqaure, triangle and sawtooth. Default: sine.</para></listitem>
- * </varlistentry>
- * <varlistentry>
- * <term><option>-f <replaceable>signalfrequency</replaceable></option></term>
- * <listitem><para>the frequency of the signal to create. Default: 1000 Hz.</para></listitem>
- * </varlistentry>
- * <varlistentry>
- * <term><option>-r <replaceable>samplerate</replaceable></option></term>
- * <listitem><para>the sample rate to use. Default: 44.1 kHz.</para></listitem>
- * </varlistentry>
- * <varlistentry>
- * <term><option>-a <replaceable>amplitude</replaceable></option></term>
- * <listitem><para>the amplitude of the generated signal. May range from 0.0 to 1.0. 1.0 means a full-scale wave. Default: 0.7.</para></listitem>
- * </varlistentry>
- * </variablelist>
- * </formalpara>
- * <p/>
- * <formalpara><title>Bugs, limitations</title>
- * <para>
- * Full-scale waves can lead to clipping. It is currently not known
- * which component is responsible for this.
- * </para></formalpara>
- * <p/>
- * <formalpara><title>Source code</title>
- * <para>
- * <ulink url="andts.javasynth.Player.java.html">andts.javasynth.Player.java</ulink>,
- * <ulink url="andts.javasynth.oscillator.Oscillator.java.html">andts.javasynth.oscillator.Oscillator.java</ulink>,
- * <ulink url="http://www.urbanophile.com/arenn/hacking/download.html">gnu.getopt.Getopt</ulink>
- * </para></formalpara>
- */
 public class Player
 {
     private static final int     BUFFER_SIZE = 128000;
@@ -74,7 +19,7 @@ public class Player
         byte[] abData2;
         byte[] abData3;
         AudioFormat audioFormat;
-        int nWaveformType = Oscillator.WAVEFORM_TRIANGLE;
+        int nWaveformType = OldOscillator.WAVEFORM_TRIANGLE;
         float fSampleRate = 44100.0F;
         float fSignalFrequency = 80.0F;
         float fAmplitude = 0.1F;
@@ -144,22 +89,22 @@ public class Player
 
         /*audioFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
                                       fSampleRate, 16, 2, 4, fSampleRate, false);*/
-        AudioInputStream oscillator = new Oscillator(
+        AudioInputStream oscillator = new OldOscillator(
                 nWaveformType,
                 2000.0F,
                 fAmplitude,
                 audioFormat,
                 AudioSystem.NOT_SPECIFIED);
 
-        AudioInputStream oscillator2 = new Oscillator(
-                Oscillator.WAVEFORM_SINE,
+        AudioInputStream oscillator2 = new OldOscillator(
+                OldOscillator.WAVEFORM_SINE,
                 700.0F,
                 fAmplitude,
                 audioFormat,
                 AudioSystem.NOT_SPECIFIED);
 
-        AudioInputStream oscillator3 = new Oscillator(
-                Oscillator.WAVEFORM_SINE,
+        AudioInputStream oscillator3 = new OldOscillator(
+                OldOscillator.WAVEFORM_SINE,
                 200.0F,
                 fAmplitude,
                 audioFormat,
@@ -194,23 +139,23 @@ public class Player
 
     private static int getWaveformType(String strWaveformType)
     {
-        int nWaveformType = Oscillator.WAVEFORM_SINE;
+        int nWaveformType = OldOscillator.WAVEFORM_SINE;
         strWaveformType = strWaveformType.trim().toLowerCase();
         if (strWaveformType.equals("sine"))
         {
-            nWaveformType = Oscillator.WAVEFORM_SINE;
+            nWaveformType = OldOscillator.WAVEFORM_SINE;
         }
         else if (strWaveformType.equals("square"))
         {
-            nWaveformType = Oscillator.WAVEFORM_SQUARE;
+            nWaveformType = OldOscillator.WAVEFORM_SQUARE;
         }
         else if (strWaveformType.equals("triangle"))
         {
-            nWaveformType = Oscillator.WAVEFORM_TRIANGLE;
+            nWaveformType = OldOscillator.WAVEFORM_TRIANGLE;
         }
         else if (strWaveformType.equals("sawtooth"))
         {
-            nWaveformType = Oscillator.WAVEFORM_SAWTOOTH;
+            nWaveformType = OldOscillator.WAVEFORM_SAWTOOTH;
         }
         return nWaveformType;
     }
