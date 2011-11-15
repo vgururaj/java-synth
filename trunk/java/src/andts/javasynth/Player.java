@@ -7,9 +7,6 @@ import javax.sound.sampled.*;
 import java.io.IOException;
 import java.util.Arrays;
 
-
-
-
 /**
  * <titleabbrev>andts.javasynth.Player</titleabbrev>
  * <title>Playing waveforms</title>
@@ -130,9 +127,7 @@ public class Player
         Mixer mainMixer = AudioSystem.getMixer(mixerInfos[0]);
 
         System.out.println("mainMixer = " + mainMixer);
-        //        mainMixer.open();
         System.out.println("mainMixer.sourceLines = " + Arrays.deepToString(mainMixer.getTargetLines()));
-
 
         audioFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, fSampleRate, 16, 2, 4, fSampleRate, false);
         DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
@@ -170,27 +165,10 @@ public class Player
                 audioFormat,
                 AudioSystem.NOT_SPECIFIED);
 
-        SourceDataLine line = null;
-        /*DataLine.Info info = new DataLine.Info(
-                SourceDataLine.class,
-                audioFormat);*/
-/*        try
-        {
-//            line = (SourceDataLine) AudioSystem.getLine(info);
-//            outputLine.start();
-        }
-        catch (LineUnavailableException e)
-        {
-            e.printStackTrace();
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }*/
-
         outputLine.open();
         outputLine2.open();
         outputLine3.open();
+
         outputLine.start();
         outputLine2.start();
         outputLine3.start();
@@ -198,6 +176,7 @@ public class Player
         abData = new byte[BUFFER_SIZE];
         abData2 = new byte[BUFFER_SIZE];
         abData3 = new byte[BUFFER_SIZE];
+
         while (true)
         {
             if (DEBUG) { out("andts.javasynth.Player.main(): trying to read (bytes): " + abData.length); }
@@ -236,20 +215,8 @@ public class Player
         return nWaveformType;
     }
 
-
-    private static void printUsageAndExit()
-    {
-        out("andts.javasynth.Player: usage:");
-        out("\tjava andts.javasynth.Player [-t <waveformtype>] [-f <signalfrequency>] [-r <samplerate>]");
-        System.exit(1);
-    }
-
-
     private static void out(String strMessage)
     {
         System.out.println(strMessage);
     }
 }
-
-
-/*** andts.javasynth.Player.java ***/
