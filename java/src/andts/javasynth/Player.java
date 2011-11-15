@@ -1,51 +1,17 @@
-/*
- *	OscillatorPlayer.java
- *
- *	This file is part of jsresources.org
- */
+package andts.javasynth;
 
-/*
- * Copyright (c) 1999 -2001 by Matthias Pfisterer
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * - Redistributions of source code must retain the above copyright notice,
- *   this list of conditions and the following disclaimer.
- * - Redistributions in binary form must reproduce the above copyright
- *   notice, this list of conditions and the following disclaimer in the
- *   documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
-/*
-|<---            this code is formatted to fit into 80 columns             --->|
-*/
+import andts.javasynth.oscillator.Oscillator;
+import com.sun.media.sound.MixerSourceLine;
 
 import javax.sound.sampled.*;
 import java.io.IOException;
+import java.util.Arrays;
 
-/*	If the compilation fails because this class is not available,
-	get gnu.getopt from the URL given in the comment below.
-*/
+
 
 
 /**
- * <titleabbrev>OscillatorPlayer</titleabbrev>
+ * <titleabbrev>andts.javasynth.Player</titleabbrev>
  * <title>Playing waveforms</title>
  * <p/>
  * <formalpara><title>Purpose</title>
@@ -56,7 +22,7 @@ import java.io.IOException;
  * <formalpara><title>Usage</title>
  * <para>
  * <cmdsynopsis>
- * <command>java OscillatorPlayer</command>
+ * <command>java andts.javasynth.Player</command>
  * <arg><option>-t <replaceable>waveformtype</replaceable></option></arg>
  * <arg><option>-f <replaceable>signalfrequency</replaceable></option></arg>
  * <arg><option>-r <replaceable>samplerate</replaceable></option></arg>
@@ -94,20 +60,22 @@ import java.io.IOException;
  * <p/>
  * <formalpara><title>Source code</title>
  * <para>
- * <ulink url="OscillatorPlayer.java.html">OscillatorPlayer.java</ulink>,
- * <ulink url="Oscillator.java.html">Oscillator.java</ulink>,
+ * <ulink url="andts.javasynth.Player.java.html">andts.javasynth.Player.java</ulink>,
+ * <ulink url="andts.javasynth.oscillator.Oscillator.java.html">andts.javasynth.oscillator.Oscillator.java</ulink>,
  * <ulink url="http://www.urbanophile.com/arenn/hacking/download.html">gnu.getopt.Getopt</ulink>
  * </para></formalpara>
  */
-public class OscillatorPlayer
+public class Player
 {
-    private static final int BUFFER_SIZE = 128000;
-    private static boolean DEBUG = true;
+    private static final int     BUFFER_SIZE = 128000;
+    private static       boolean DEBUG       = false;
 
 
-    public static void main(String[] args) throws IOException
+    public static void main(String[] args) throws IOException, LineUnavailableException
     {
         byte[] abData;
+        byte[] abData2;
+        byte[] abData3;
         AudioFormat audioFormat;
         int nWaveformType = Oscillator.WAVEFORM_TRIANGLE;
         float fSampleRate = 44100.0F;
@@ -155,23 +123,61 @@ public class OscillatorPlayer
             }
         }*/
 
-        audioFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
-                                      fSampleRate, 16, 2, 4, fSampleRate, false);
+        Mixer.Info[] mixerInfos = AudioSystem.getMixerInfo();
+
+        System.out.println("mixerInfos = " + Arrays.deepToString(mixerInfos));
+
+        Mixer mainMixer = AudioSystem.getMixer(mixerInfos[0]);
+
+        System.out.println("mainMixer = " + mainMixer);
+        //        mainMixer.open();
+        System.out.println("mainMixer.sourceLines = " + Arrays.deepToString(mainMixer.getTargetLines()));
+
+
+        audioFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, fSampleRate, 16, 2, 4, fSampleRate, false);
+        DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
+        System.out.println("mainMixer.getMaxLines = " + mainMixer.getMaxLines(info));
+
+        MixerSourceLine outputLine = (MixerSourceLine) mainMixer.getLine(info);
+        MixerSourceLine outputLine2 = (MixerSourceLine) mainMixer.getLine(info);
+        MixerSourceLine outputLine3 = (MixerSourceLine) mainMixer.getLine(info);
+
+        System.out.println("outputLine = " + outputLine.toString());
+        System.out.println("outputLine2 = " + outputLine2.toString());
+        System.out.println("outputLine3 = " + outputLine3.toString());
+
+
+        /*audioFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
+                                      fSampleRate, 16, 2, 4, fSampleRate, false);*/
         AudioInputStream oscillator = new Oscillator(
                 nWaveformType,
-                fSignalFrequency,
+                2000.0F,
                 fAmplitude,
                 audioFormat,
                 AudioSystem.NOT_SPECIFIED);
+
+        AudioInputStream oscillator2 = new Oscillator(
+                Oscillator.WAVEFORM_SINE,
+                700.0F,
+                fAmplitude,
+                audioFormat,
+                AudioSystem.NOT_SPECIFIED);
+
+        AudioInputStream oscillator3 = new Oscillator(
+                Oscillator.WAVEFORM_SINE,
+                200.0F,
+                fAmplitude,
+                audioFormat,
+                AudioSystem.NOT_SPECIFIED);
+
         SourceDataLine line = null;
-        DataLine.Info info = new DataLine.Info(
+        /*DataLine.Info info = new DataLine.Info(
                 SourceDataLine.class,
-                audioFormat);
-        try
+                audioFormat);*/
+/*        try
         {
-            line = (SourceDataLine) AudioSystem.getLine(info);
-            line.open(audioFormat);
-            line.start();
+//            line = (SourceDataLine) AudioSystem.getLine(info);
+//            outputLine.start();
         }
         catch (LineUnavailableException e)
         {
@@ -180,17 +186,29 @@ public class OscillatorPlayer
         catch (Exception e)
         {
             e.printStackTrace();
-        }
+        }*/
 
+        outputLine.open();
+        outputLine2.open();
+        outputLine3.open();
+        outputLine.start();
+        outputLine2.start();
+        outputLine3.start();
 
         abData = new byte[BUFFER_SIZE];
+        abData2 = new byte[BUFFER_SIZE];
+        abData3 = new byte[BUFFER_SIZE];
         while (true)
         {
-            if (DEBUG) { out("OscillatorPlayer.main(): trying to read (bytes): " + abData.length); }
+            if (DEBUG) { out("andts.javasynth.Player.main(): trying to read (bytes): " + abData.length); }
             int nRead = oscillator.read(abData);
-            if (DEBUG) { out("OscillatorPlayer.main(): in loop, read (bytes): " + nRead); }
-            int nWritten = line.write(abData, 0, nRead);
-            if (DEBUG) { out("OscillatorPlayer.main(): written: " + nWritten); }
+            int nRead2 = oscillator2.read(abData2);
+            int nRead3 = oscillator3.read(abData3);
+            if (DEBUG) { out("andts.javasynth.Player.main(): in loop, read (bytes): " + nRead); }
+            int nWritten = outputLine.write(abData, 0, nRead);
+            int nWritten2 = outputLine2.write(abData2, 0, nRead2);
+            int nWritten3 = outputLine3.write(abData3, 0, nRead3);
+            if (DEBUG) { out("andts.javasynth.Player.main(): written: " + nWritten); }
         }
     }
 
@@ -221,8 +239,8 @@ public class OscillatorPlayer
 
     private static void printUsageAndExit()
     {
-        out("OscillatorPlayer: usage:");
-        out("\tjava OscillatorPlayer [-t <waveformtype>] [-f <signalfrequency>] [-r <samplerate>]");
+        out("andts.javasynth.Player: usage:");
+        out("\tjava andts.javasynth.Player [-t <waveformtype>] [-f <signalfrequency>] [-r <samplerate>]");
         System.exit(1);
     }
 
@@ -234,4 +252,4 @@ public class OscillatorPlayer
 }
 
 
-/*** OscillatorPlayer.java ***/
+/*** andts.javasynth.Player.java ***/
