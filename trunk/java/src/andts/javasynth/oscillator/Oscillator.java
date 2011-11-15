@@ -1,5 +1,5 @@
-/*
- *	Oscillator.java
+package andts.javasynth.oscillator;/*
+ *	andts.javasynth.oscillator.Oscillator.java
  *
  *	This file is part of jsresources.org
  */
@@ -45,7 +45,7 @@ import java.io.IOException;
 
 public class Oscillator extends AudioInputStream
 {
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     public static final int WAVEFORM_SINE = 0;
     public static final int WAVEFORM_SQUARE = 1;
@@ -69,7 +69,7 @@ public class Oscillator extends AudioInputStream
                               audioFormat.getFrameRate(),
                               audioFormat.isBigEndian()),
               lLength);
-        if (DEBUG) { out("Oscillator.<init>(): begin"); }
+        if (DEBUG) { out("andts.javasynth.oscillator.Oscillator.<init>(): begin"); }
         m_lRemainingFrames = lLength;
         fAmplitude = (float) (fAmplitude * Math.pow(2, getFormat().getSampleSizeInBits() - 1));
         // length of one period in frames
@@ -122,13 +122,13 @@ public class Oscillator extends AudioInputStream
             int nValue = Math.round(fValue * fAmplitude);
             int nBaseAddr = (nFrame) * getFormat().getFrameSize();
             // this is for 16 bit stereo, little endian
-            m_abData[nBaseAddr + 0] = (byte) (nValue & 0xFF);
+            m_abData[nBaseAddr + 0] = 0;//(byte) (nValue & 0xFF);
             m_abData[nBaseAddr + 1] = (byte) ((nValue >>> 8) & 0xFF);
-            m_abData[nBaseAddr + 2] = (byte) (nValue & 0xFF);
+            m_abData[nBaseAddr + 2] = 0;//(byte) (nValue & 0xFF);
             m_abData[nBaseAddr + 3] = (byte) ((nValue >>> 8) & 0xFF);
         }
         m_nBufferPosition = 0;
-        if (DEBUG) { out("Oscillator.<init>(): end"); }
+        if (DEBUG) { out("andts.javasynth.oscillator.Oscillator.<init>(): end"); }
     }
 
 
@@ -165,7 +165,7 @@ public class Oscillator extends AudioInputStream
     public int read()
             throws IOException
     {
-        if (DEBUG) { out("Oscillator.read(): begin"); }
+        if (DEBUG) { out("andts.javasynth.oscillator.Oscillator.read(): begin"); }
         throw new IOException("cannot use this method currently");
     }
 
@@ -173,7 +173,7 @@ public class Oscillator extends AudioInputStream
     public int read(byte[] abData, int nOffset, int nLength)
             throws IOException
     {
-        if (DEBUG) { out("Oscillator.read(): begin"); }
+        if (DEBUG) { out("andts.javasynth.oscillator.Oscillator.read(): begin"); }
         if (nLength % getFormat().getFrameSize() != 0)
         {
             throw new IOException("length must be an integer multiple of frame size");
@@ -199,7 +199,7 @@ public class Oscillator extends AudioInputStream
         {
             nReturn = -1;
         }
-        if (DEBUG) { out("Oscillator.read(): end"); }
+        if (DEBUG) { out("andts.javasynth.oscillator.Oscillator.read(): end"); }
         return nReturn;
     }
 
@@ -211,4 +211,4 @@ public class Oscillator extends AudioInputStream
 }
 
 
-/*** Oscillator.java ***/
+/*** andts.javasynth.oscillator.Oscillator.java ***/
