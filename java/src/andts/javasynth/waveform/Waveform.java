@@ -10,12 +10,12 @@ public interface Waveform
      * Get resolution of this waveform in frames
      * @return max number of frames computed for one period of this wave
      */
-    int getFrameCount();
+    public int getFrameCount();
 
     /**
      * Get the value of this waveform for specific frame
      * @param frameNumber number of the frame to get the value for
      * @return value of the waveform in specified position
      */
-    float getFrameValue(int frameNumber);
+    public float getFrameValue(int frameNumber);
 }

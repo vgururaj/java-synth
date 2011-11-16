@@ -6,4 +6,8 @@ package andts.javasynth.oscillator;
  */
 public interface Oscillator
 {
+
+    public float getFrequency();
+
+    public void setFrequency(float freq);
 }

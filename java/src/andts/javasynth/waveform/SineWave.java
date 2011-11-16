@@ -20,7 +20,7 @@ public class SineWave implements Waveform
             float periodPosition = (float) currentFrame / (float) frameCount;
             float sineValue = (float) Math.sin(periodPosition * 2.0 * Math.PI);
 
-            // this is for 16 bit stereo, little endian
+            // this is for 16 bit stereo, little-endian
             SINE_VALUES[currentFrame] = sineValue;
         }
     }
