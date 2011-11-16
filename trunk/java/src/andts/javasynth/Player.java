@@ -78,14 +78,13 @@ public class Player
         DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
         System.out.println("mainMixer.getMaxLines = " + mainMixer.getMaxLines(info));
 
-        MixerSourceLine outputLine = (MixerSourceLine) mainMixer.getLine(info);
-        MixerSourceLine outputLine2 = (MixerSourceLine) mainMixer.getLine(info);
-        MixerSourceLine outputLine3 = (MixerSourceLine) mainMixer.getLine(info);
+        SourceDataLine outputLine = (SourceDataLine) mainMixer.getLine(info);
+        SourceDataLine outputLine2 = (SourceDataLine) mainMixer.getLine(info);
+        SourceDataLine outputLine3 = (SourceDataLine) mainMixer.getLine(info);
 
         System.out.println("outputLine = " + outputLine.toString());
         System.out.println("outputLine2 = " + outputLine2.toString());
         System.out.println("outputLine3 = " + outputLine3.toString());
-
 
         /*audioFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
                                       fSampleRate, 16, 2, 4, fSampleRate, false);*/
