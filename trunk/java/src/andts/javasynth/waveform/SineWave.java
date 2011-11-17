@@ -3,14 +3,15 @@ package andts.javasynth.waveform;
 public class SineWave implements Waveform
 {
     private static final float MIN_FREQUENCY = 0.1F; //lowest frequency -> longest period
-    private final float[] SINE_VALUES;
-    private int frameCount;
+    private final double[] SINE_VALUES;
+    private final int frameCount;
 
     private SineWave(int frameRate)
     {
         this.frameCount = Math.round(frameRate / MIN_FREQUENCY);
 
-        SINE_VALUES = new float[frameCount];
+        SINE_VALUES = new double[frameCount];
+//        SINE_VALUES = new double[frameCount];
 
         for (int currentFrame = 0; currentFrame < frameCount; currentFrame++)
         {
