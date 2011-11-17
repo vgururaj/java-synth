@@ -87,9 +87,9 @@ public class OldOscillator extends AudioInputStream
             int nValue = Math.round(fValue * fAmplitude);
             int nBaseAddr = (nFrame) * getFormat().getFrameSize();
             // this is for 16 bit stereo, little endian
-            m_abData[nBaseAddr] = 0;//(byte) (nValue & 0xFF);
+            m_abData[nBaseAddr] = (byte) (nValue & 0xFF);
             m_abData[nBaseAddr + 1] = (byte) ((nValue >>> 8) & 0xFF);
-            m_abData[nBaseAddr + 2] = 0;//(byte) (nValue & 0xFF);
+            m_abData[nBaseAddr + 2] = (byte) (nValue & 0xFF);
             m_abData[nBaseAddr + 3] = (byte) ((nValue >>> 8) & 0xFF);
         }
         m_nBufferPosition = 0;

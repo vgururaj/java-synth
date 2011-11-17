@@ -6,6 +6,8 @@ package andts.javasynth.waveform;
  */
 public interface Waveform
 {
+    public float MIN_FREQUENCY = 0.1F; //lowest frequency -> longest period
+
     /**
      * Get resolution of this waveform in frames
      * @return max number of frames computed for one period of this wave

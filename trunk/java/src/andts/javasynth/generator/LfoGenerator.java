@@ -8,9 +8,9 @@ import andts.javasynth.waveform.Waveform;
  */
 public class LfoGenerator extends Generator
 {
-    public LfoGenerator(Oscillator osc, LfoAmplifier amp)
+
+    public LfoGenerator(Oscillator osc, SamplePreAmplifier amp)
     {
-        this.osc = osc;
-        this.amp = amp;
+        super(osc, amp);
     }
 }
