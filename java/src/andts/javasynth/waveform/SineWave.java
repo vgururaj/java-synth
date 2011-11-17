@@ -35,7 +35,7 @@ public class SineWave implements Waveform
         return frameCount;
     }
 
-    public float getFrameValue(int frameNumber)
+    public double getFrameValue(int frameNumber)
     {
         return SINE_VALUES[frameNumber];
     }

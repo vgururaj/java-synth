@@ -17,5 +17,5 @@ public interface Waveform
      * @param frameNumber number of the frame to get the value for
      * @return value of the waveform in specified position
      */
-    public float getFrameValue(int frameNumber);
+    public double getFrameValue(int frameNumber);
 }

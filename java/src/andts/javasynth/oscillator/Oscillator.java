@@ -2,12 +2,13 @@ package andts.javasynth.oscillator;
 
 /**
  * Base interface for Signal Generators and Low-Frequency Oscillators
- * Has knowledge about frequency and amplitude of signal and means for manipulating them.
+ * Allow to set frequency of the signal.
  */
 public interface Oscillator
 {
+    public double getFrequency();
 
-    public float getFrequency();
+    public void setFrequency(double freq);
 
-    public void setFrequency(float freq);
+    public double getNextValue();
 }
