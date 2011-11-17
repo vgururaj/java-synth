@@ -1,7 +1,12 @@
 package andts.javasynth;
 
+import andts.javasynth.generator.SamplePreAmplifier;
+import andts.javasynth.generator.SoundGenerator;
 import andts.javasynth.oscillator.OldOscillator;
-import com.sun.media.sound.MixerSourceLine;
+import andts.javasynth.oscillator.Oscillator;
+import andts.javasynth.oscillator.SimpleOscillator;
+import andts.javasynth.waveform.SineWave;
+import andts.javasynth.waveform.Waveform;
 
 import javax.sound.sampled.*;
 import java.io.IOException;
@@ -9,61 +14,22 @@ import java.util.Arrays;
 
 public class Player
 {
-    private static final int     BUFFER_SIZE = 128000;
-    private static       boolean DEBUG       = false;
+    private static final int     BUFFER_SIZE       = 64000;
+    private static final int     FRAME_BUFFER_SIZE = 16000;
+    private static       boolean DEBUG             = false;
 
 
     public static void main(String[] args) throws IOException, LineUnavailableException
     {
         byte[] abData;
-        byte[] abData2;
-        byte[] abData3;
+        //        byte[] abData2;
+        //        byte[] abData3;
         AudioFormat audioFormat;
         int nWaveformType = OldOscillator.WAVEFORM_TRIANGLE;
         float fSampleRate = 44100.0F;
-        float fSignalFrequency = 80.0F;
+        //        float fSignalFrequency = 80.0F;
         float fAmplitude = 0.1F;
 
-        /*
-           *	Parsing of command-line options takes place...
-           */
-        /*Getopt g = new Getopt("AudioPlayer", args, "ht:r:f:a:D");
-        int c;
-        while ((c = g.getopt()) != -1)
-        {
-            switch (c)
-            {
-                case 'h':
-                    printUsageAndExit();
-
-                case 't':
-                    nWaveformType = getWaveformType(g.getOptarg());
-                    break;
-
-                case 'r':
-                    fSampleRate = Float.parseFloat(g.getOptarg());
-                    break;
-
-                case 'f':
-                    fSignalFrequency = Float.parseFloat(g.getOptarg());
-                    break;
-
-                case 'a':
-                    fAmplitude = Float.parseFloat(g.getOptarg());
-                    break;
-
-                case 'D':
-                    DEBUG = true;
-                    break;
-
-                case '?':
-                    printUsageAndExit();
-
-                default:
-                    if (DEBUG) { out("getopt() returned " + c); }
-                    break;
-            }
-        }*/
 
         Mixer.Info[] mixerInfos = AudioSystem.getMixerInfo();
 
@@ -80,22 +46,22 @@ public class Player
 
         SourceDataLine outputLine = (SourceDataLine) mainMixer.getLine(info);
         SourceDataLine outputLine2 = (SourceDataLine) mainMixer.getLine(info);
-        SourceDataLine outputLine3 = (SourceDataLine) mainMixer.getLine(info);
+        //        SourceDataLine outputLine3 = (SourceDataLine) mainMixer.getLine(info);
 
         System.out.println("outputLine = " + outputLine.toString());
-        System.out.println("outputLine2 = " + outputLine2.toString());
-        System.out.println("outputLine3 = " + outputLine3.toString());
+        //        System.out.println("outputLine2 = " + outputLine2.toString());
+        //        System.out.println("outputLine3 = " + outputLine3.toString());
 
         /*audioFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
                                       fSampleRate, 16, 2, 4, fSampleRate, false);*/
         AudioInputStream oscillator = new OldOscillator(
-                nWaveformType,
-                2000.0F,
+                OldOscillator.WAVEFORM_SINE,
+                700.0F,
                 fAmplitude,
                 audioFormat,
                 AudioSystem.NOT_SPECIFIED);
 
-        AudioInputStream oscillator2 = new OldOscillator(
+        /*AudioInputStream oscillator2 = new OldOscillator(
                 OldOscillator.WAVEFORM_SINE,
                 700.0F,
                 fAmplitude,
@@ -104,63 +70,67 @@ public class Player
 
         AudioInputStream oscillator3 = new OldOscillator(
                 OldOscillator.WAVEFORM_SINE,
-                200.0F,
-                fAmplitude,
+                50.0F,
+                0.7f,
                 audioFormat,
-                AudioSystem.NOT_SPECIFIED);
+                AudioSystem.NOT_SPECIFIED);*/
 
         outputLine.open();
         outputLine2.open();
-        outputLine3.open();
+        //        outputLine3.open();
 
         outputLine.start();
         outputLine2.start();
-        outputLine3.start();
+        //        outputLine3.start();
 
         abData = new byte[BUFFER_SIZE];
-        abData2 = new byte[BUFFER_SIZE];
-        abData3 = new byte[BUFFER_SIZE];
+        //        abData2 = new byte[BUFFER_SIZE];
+        //        abData3 = new byte[BUFFER_SIZE];
 
-        while (true)
-        {
-            if (DEBUG) { out("andts.javasynth.Player.main(): trying to read (bytes): " + abData.length); }
-            int nRead = oscillator.read(abData);
-            int nRead2 = oscillator2.read(abData2);
-            int nRead3 = oscillator3.read(abData3);
-            if (DEBUG) { out("andts.javasynth.Player.main(): in loop, read (bytes): " + nRead); }
-            int nWritten = outputLine.write(abData, 0, nRead);
-            int nWritten2 = outputLine2.write(abData2, 0, nRead2);
-            int nWritten3 = outputLine3.write(abData3, 0, nRead3);
-            if (DEBUG) { out("andts.javasynth.Player.main(): written: " + nWritten); }
-        }
-    }
+        byte[] oscBuffer = new byte[BUFFER_SIZE];
 
+        Waveform wave = new SineWave(44100);
 
-    private static int getWaveformType(String strWaveformType)
-    {
-        int nWaveformType = OldOscillator.WAVEFORM_SINE;
-        strWaveformType = strWaveformType.trim().toLowerCase();
-        if (strWaveformType.equals("sine"))
-        {
-            nWaveformType = OldOscillator.WAVEFORM_SINE;
-        }
-        else if (strWaveformType.equals("square"))
-        {
-            nWaveformType = OldOscillator.WAVEFORM_SQUARE;
-        }
-        else if (strWaveformType.equals("triangle"))
-        {
-            nWaveformType = OldOscillator.WAVEFORM_TRIANGLE;
-        }
-        else if (strWaveformType.equals("sawtooth"))
-        {
-            nWaveformType = OldOscillator.WAVEFORM_SAWTOOTH;
-        }
-        return nWaveformType;
-    }
+        Oscillator osc = new SimpleOscillator(wave, 700.0F);
 
-    private static void out(String strMessage)
-    {
-        System.out.println(strMessage);
+        SamplePreAmplifier amp = new SamplePreAmplifier(16);
+
+        SoundGenerator gen = new SoundGenerator(osc, amp);
+
+//                while (true)
+//                {
+        //            if (DEBUG) { out("andts.javasynth.Player.main(): trying to read (bytes): " + abData.length); }
+        int nRead = oscillator.read(abData);
+        //            int nRead2 = oscillator2.read(abData2);
+        //            int nRead3 = oscillator3.read(abData3);
+
+        System.out.print("array1 = ");
+        for (int j = 0; j < abData.length; ++j)
+        {
+            System.out.print(abData[j] + ", ");
+        }
+
+        System.out.println("\n");
+
+        for (int i = 0; i < FRAME_BUFFER_SIZE; ++i)
+        {
+            byte[] monoFrame = Util.trimInt(gen.getNextSample());
+            System.arraycopy(monoFrame, 0, oscBuffer, i * 4, 2);
+            System.arraycopy(monoFrame, 0, oscBuffer, (i * 4) + 2, 2);
+        }
+
+        System.out.print("array2 = ");
+        for (int j = 0; j < oscBuffer.length; ++j)
+        {
+            System.out.print(oscBuffer[j] + ", ");
+        }
+
+        //            if (DEBUG) { out("andts.javasynth.Player.main(): in loop, read (bytes): " + nRead); }
+//                    int nWritten = outputLine2.write(abData, 0, nRead);
+        //            int nWritten2 = outputLine2.write(abData2, 0, nRead2);
+        //            int nWritten3 = outputLine3.write(abData3, 0, nRead3);
+//                    outputLine.write(oscBuffer, 0, BUFFER_SIZE);
+        //            if (DEBUG) { out("andts.javasynth.Player.main(): written: " + nWritten); }
+//                }
     }
 }

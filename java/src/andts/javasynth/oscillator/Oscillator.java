@@ -8,9 +8,9 @@ import andts.javasynth.waveform.Waveform;
  */
 public interface Oscillator
 {
-    public double getFrequency();
+    public float getFrequency();
 
-    public void setFrequency(double freq);
+    public void setFrequency(float freq);
 
     public Waveform getWaveform();
     

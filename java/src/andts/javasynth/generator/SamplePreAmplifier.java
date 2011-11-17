@@ -5,17 +5,17 @@ package andts.javasynth.generator;
  * translates double value from oscillator into a real sample value in long
  * amp factor depends on sample resolution
  */
-public class SamplePreAmplifier implements Amplifier<Long>
+public class SamplePreAmplifier implements Amplifier<Integer>
 {
-    private final long ampFactor;
+    private final int ampFactor;
 
     public SamplePreAmplifier(int sampleSize)
     {
-        ampFactor = Math.round(Math.pow(2, sampleSize - 1));
+        ampFactor = (int) Math.round(Math.pow(2, sampleSize - 1));
     }
 
-    public Long getAmplifiedValue(double value)
+    public Integer getAmplifiedValue(double value)
     {
-        return Math.round(value * ampFactor);
+        return Math.round(0.1F * ((float)value) * ampFactor);
     }
 }
