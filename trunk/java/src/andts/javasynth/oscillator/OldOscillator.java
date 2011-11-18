@@ -41,6 +41,7 @@ public class OldOscillator extends AudioInputStream
         int nPeriodLengthInFrames = Math.round(getFormat().getFrameRate() / fSignalFrequency);
         int nBufferLength = nPeriodLengthInFrames * getFormat().getFrameSize();
         m_abData = new byte[nBufferLength];
+        System.out.println("oldOscillator: nPeriodLengthInFrames = " + nPeriodLengthInFrames);
         for (int nFrame = 0; nFrame < nPeriodLengthInFrames; nFrame++)
         {
             /**    The relative position inside the period
@@ -89,8 +90,8 @@ public class OldOscillator extends AudioInputStream
             // this is for 16 bit stereo, little endian
             m_abData[nBaseAddr] = (byte) (nValue & 0xFF);
             m_abData[nBaseAddr + 1] = (byte) ((nValue >>> 8) & 0xFF);
-            m_abData[nBaseAddr + 2] = (byte) (nValue & 0xFF);
-            m_abData[nBaseAddr + 3] = (byte) ((nValue >>> 8) & 0xFF);
+            m_abData[nBaseAddr + 2] = 0;//(byte) (nValue & 0xFF);
+            m_abData[nBaseAddr + 3] = 0;//(byte) ((nValue >>> 8) & 0xFF);
         }
         m_nBufferPosition = 0;
         if (DEBUG) { out("andts.javasynth.oscillator.OldOscillator.<init>(): end"); }

@@ -20,4 +20,6 @@ public interface Waveform
      * @return value of the waveform in specified position
      */
     public double getFrameValue(int frameNumber);
+
+    int getFrameRate();
 }
