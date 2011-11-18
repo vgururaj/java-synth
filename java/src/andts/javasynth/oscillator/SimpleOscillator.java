@@ -16,6 +16,8 @@ public class SimpleOscillator implements Oscillator
         this.freq = freq;
         this.frameCount = wave.getFrameCount();
         this.frameSkip = calcFrameSkip(frameCount, this.freq);
+        System.out.println("frameCount = " + frameCount);
+        System.out.println("frameSkip = " + frameSkip);
     }
 
     public float getFrequency()
@@ -31,7 +33,8 @@ public class SimpleOscillator implements Oscillator
 
     private int calcFrameSkip(int frameCount, float freq)
     {
-        int oneWavePeriodInFrames = Math.round(frameCount / freq);
+        int oneWavePeriodInFrames = Math.round(wave.getFrameRate() / freq);
+        System.out.println("oneWavePeriodInFrames = " + oneWavePeriodInFrames);
         return frameCount / oneWavePeriodInFrames;
     }
 
@@ -56,6 +59,7 @@ public class SimpleOscillator implements Oscillator
 
         double result =  wave.getFrameValue(currentFrame);
         currentFrame = currentFrame + frameSkip;
+//        System.out.println("currentFrame = " + currentFrame +", result = " + result);
         return result;
     }
 }

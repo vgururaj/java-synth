@@ -56,7 +56,7 @@ public class Player
                                       fSampleRate, 16, 2, 4, fSampleRate, false);*/
         AudioInputStream oscillator = new OldOscillator(
                 OldOscillator.WAVEFORM_SINE,
-                700.0F,
+                1500.0F,
                 fAmplitude,
                 audioFormat,
                 AudioSystem.NOT_SPECIFIED);
@@ -91,46 +91,49 @@ public class Player
 
         Waveform wave = new SineWave(44100);
 
-        Oscillator osc = new SimpleOscillator(wave, 700.0F);
+        Oscillator osc = new SimpleOscillator(wave, 1500.0F);
 
         SamplePreAmplifier amp = new SamplePreAmplifier(16);
 
         SoundGenerator gen = new SoundGenerator(osc, amp);
 
-//                while (true)
-//                {
+                while (true)
+                {
         //            if (DEBUG) { out("andts.javasynth.Player.main(): trying to read (bytes): " + abData.length); }
         int nRead = oscillator.read(abData);
         //            int nRead2 = oscillator2.read(abData2);
         //            int nRead3 = oscillator3.read(abData3);
 
-        System.out.print("array1 = ");
-        for (int j = 0; j < abData.length; ++j)
+   /*     System.out.print("array1 = ");
+        for (int j = 0; j < abData.length; j += 4)
         {
-            System.out.print(abData[j] + ", ");
-        }
+            int a = (abData[j+1] << 8) + abData[j];
+            System.out.print(a + ",\n ");
+        }*/
 
-        System.out.println("\n");
+//        System.out.println("\n");
 
+//        int[] waveBuffer = new int[FRAME_BUFFER_SIZE];
         for (int i = 0; i < FRAME_BUFFER_SIZE; ++i)
         {
+//            waveBuffer[i] = gen.getNextSample();
             byte[] monoFrame = Util.trimInt(gen.getNextSample());
-            System.arraycopy(monoFrame, 0, oscBuffer, i * 4, 2);
+//            System.arraycopy(monoFrame, 0, oscBuffer, i * 4, 2);
             System.arraycopy(monoFrame, 0, oscBuffer, (i * 4) + 2, 2);
         }
 
-        System.out.print("array2 = ");
-        for (int j = 0; j < oscBuffer.length; ++j)
+        /*System.out.print("array2 = ");
+        for (int j = 0; j < waveBuffer.length; ++j)
         {
-            System.out.print(oscBuffer[j] + ", ");
-        }
+            System.out.print(waveBuffer[j] + ",\n ");
+        }*/
 
         //            if (DEBUG) { out("andts.javasynth.Player.main(): in loop, read (bytes): " + nRead); }
-//                    int nWritten = outputLine2.write(abData, 0, nRead);
+                    int nWritten = outputLine2.write(abData, 0, nRead);
         //            int nWritten2 = outputLine2.write(abData2, 0, nRead2);
         //            int nWritten3 = outputLine3.write(abData3, 0, nRead3);
-//                    outputLine.write(oscBuffer, 0, BUFFER_SIZE);
+                    outputLine.write(oscBuffer, 0, BUFFER_SIZE);
         //            if (DEBUG) { out("andts.javasynth.Player.main(): written: " + nWritten); }
-//                }
+                }
     }
 }
