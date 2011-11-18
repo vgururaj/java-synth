@@ -3,11 +3,11 @@ package andts.javasynth.generator;
 /**
  * This class serves as a 'Gain' knob for LFO generator
  */
-public class LfoAmplifier
+public class Gain
 {
     private float ampFactor = 0.0F;
 
-    public LfoAmplifier(float ampFactor)
+    public Gain(float ampFactor)
     {
         this.ampFactor = ampFactor;
     }

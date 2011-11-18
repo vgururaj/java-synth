@@ -21,5 +21,9 @@ public interface Waveform
      */
     public double getFrameValue(int frameNumber);
 
+    /**
+     * Get frame rate of this waveform
+     * @return frame rate [frames/sec]
+     */
     int getFrameRate();
 }
