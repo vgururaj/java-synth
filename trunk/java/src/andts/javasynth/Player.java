@@ -34,39 +34,67 @@ public class Player
         DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
         System.out.println("mainMixer.getMaxLines = " + mainMixer.getMaxLines(info));
 
-        SourceDataLine outputLine = (SourceDataLine) mainMixer.getLine(info);
+        SourceDataLine outputLine1 = (SourceDataLine) mainMixer.getLine(info);
+        SourceDataLine outputLine2 = (SourceDataLine) mainMixer.getLine(info);
 
-        System.out.println("outputLine = " + outputLine.toString());
+        System.out.println("outputLine = " + outputLine1.toString());
+        System.out.println("outputLine = " + outputLine2.toString());
 
-        outputLine.open();
-        outputLine.start();
+        outputLine1.open();
+        outputLine2.open();
+        outputLine1.start();
+        outputLine2.start();
 
-        byte[] oscBuffer = new byte[BUFFER_SIZE];
+        //first sound generator
+        byte[] oscBuffer1 = new byte[BUFFER_SIZE];
 
-        Waveform wave = new SineWave(44100);
-        Oscillator osc = new SimpleOscillator(wave, 100.0F);
-        SamplePreAmplifier amp = new SamplePreAmplifier(16);
+        Waveform wave1 = new SineWave(44100);
+        Oscillator osc1 = new SimpleOscillator(wave1, 300.0F);
+        SamplePreAmplifier amp1 = new SamplePreAmplifier(16);
         //freq lfo
-        Oscillator freqLfoOsc = new SimpleOscillator(wave, 3F);
-        LfoAmplifier freqLfoAmp = new LfoAmplifier(0.5f);
-        LfoGenerator freqLfo = new LfoGenerator(freqLfoOsc, freqLfoAmp);
+        Oscillator freqLfoOsc1 = new SimpleOscillator(wave1, 3F);
+        LfoAmplifier freqLfoAmp1 = new LfoAmplifier(0.5f);
+        LfoGenerator freqLfo1 = new LfoGenerator(freqLfoOsc1, freqLfoAmp1);
         //gain lfo
-        Oscillator gainLfoOsc = new SimpleOscillator(wave, 1.7F);
-        LfoAmplifier gainLfoAmp = new LfoAmplifier(1f);
-        LfoGenerator gainLfo = new LfoGenerator(gainLfoOsc, gainLfoAmp);
+        Oscillator gainLfoOsc1 = new SimpleOscillator(wave1, 1.7F);
+        LfoAmplifier gainLfoAmp1 = new LfoAmplifier(1f);
+        LfoGenerator gainLfo1 = new LfoGenerator(gainLfoOsc1, gainLfoAmp1);
 
-        SoundGenerator gen = new SoundGenerator(osc, amp, freqLfo, gainLfo);
+        SoundGenerator gen1 = new SoundGenerator(osc1, amp1, freqLfo1, gainLfo1);
+        
+        //second sound generator
+        byte[] oscBuffer2 = new byte[BUFFER_SIZE];
+        
+        Waveform wave2 = new SineWave(44100);
+        Oscillator osc2 = new SimpleOscillator(wave2, 150.0F);
+        SamplePreAmplifier amp2 = new SamplePreAmplifier(16);
+        //freq lfo
+        Oscillator freqLfoOsc2 = new SimpleOscillator(wave2, 5F);
+        LfoAmplifier freqLfoAmp2 = new LfoAmplifier(0.5f);
+        LfoGenerator freqLfo2 = new LfoGenerator(freqLfoOsc2, freqLfoAmp2);
+        //gain lfo
+        Oscillator gainLfoOsc2 = new SimpleOscillator(wave2, 1F);
+        LfoAmplifier gainLfoAmp2 = new LfoAmplifier(0f);
+        LfoGenerator gainLfo2 = new LfoGenerator(gainLfoOsc2, gainLfoAmp2);
+
+        SoundGenerator gen2 = new SoundGenerator(osc2, amp2, freqLfo2, gainLfo2);
+        
 
         while (true)
         {
             for (int i = 0; i < FRAME_BUFFER_SIZE; ++i)
             {
-                byte[] monoFrame = Util.trimLong(gen.getNextSample());
-                System.arraycopy(monoFrame, 0, oscBuffer, i * 4, 2); //left channel
-                System.arraycopy(monoFrame, 0, oscBuffer, (i * 4) + 2, 2); //right channel
+                byte[] monoFrame1 = Util.trimLong(gen1.getNextSample());
+                System.arraycopy(monoFrame1, 0, oscBuffer1, i * 4, 2); //left channel
+                System.arraycopy(monoFrame1, 0, oscBuffer1, (i * 4) + 2, 2); //right channel
+
+                byte[] monoFrame2 = Util.trimLong(gen2.getNextSample());
+                System.arraycopy(monoFrame2, 0, oscBuffer2, i * 4, 2); //left channel
+                System.arraycopy(monoFrame2, 0, oscBuffer2, (i * 4) + 2, 2); //right channel
             }
 
-            outputLine.write(oscBuffer, 0, BUFFER_SIZE);
+            outputLine1.write(oscBuffer1, 0, BUFFER_SIZE);
+            outputLine2.write(oscBuffer2, 0, BUFFER_SIZE);
         }
     }
 }
