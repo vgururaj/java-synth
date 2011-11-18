@@ -15,8 +15,8 @@ import java.util.Arrays;
 
 public class Player
 {
-    private static final int BUFFER_SIZE = 256000;
-    private static final int FRAME_BUFFER_SIZE = 64000;
+    private static final int BUFFER_SIZE = 64000;
+    private static final int FRAME_BUFFER_SIZE = 16000;
 
     public static void main(String[] args) throws IOException, LineUnavailableException
     {
@@ -47,11 +47,11 @@ public class Player
         Oscillator osc = new SimpleOscillator(wave, 100.0F);
         SamplePreAmplifier amp = new SamplePreAmplifier(16);
         //freq lfo
-        Oscillator freqLfoOsc = new SimpleOscillator(wave, 2F);
+        Oscillator freqLfoOsc = new SimpleOscillator(wave, 3F);
         LfoAmplifier freqLfoAmp = new LfoAmplifier(0.5f);
         LfoGenerator freqLfo = new LfoGenerator(freqLfoOsc, freqLfoAmp);
         //gain lfo
-        Oscillator gainLfoOsc = new SimpleOscillator(wave, 0.10F);
+        Oscillator gainLfoOsc = new SimpleOscillator(wave, 1.7F);
         LfoAmplifier gainLfoAmp = new LfoAmplifier(1f);
         LfoGenerator gainLfo = new LfoGenerator(gainLfoOsc, gainLfoAmp);
 
@@ -62,8 +62,8 @@ public class Player
             for (int i = 0; i < FRAME_BUFFER_SIZE; ++i)
             {
                 byte[] monoFrame = Util.trimLong(gen.getNextSample());
-                System.arraycopy(monoFrame, 0, oscBuffer, i * 4, 2);
-                System.arraycopy(monoFrame, 0, oscBuffer, (i * 4) + 2, 2);
+                System.arraycopy(monoFrame, 0, oscBuffer, i * 4, 2); //left channel
+                System.arraycopy(monoFrame, 0, oscBuffer, (i * 4) + 2, 2); //right channel
             }
 
             outputLine.write(oscBuffer, 0, BUFFER_SIZE);

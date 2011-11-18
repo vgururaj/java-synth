@@ -16,6 +16,6 @@ public class SamplePreAmplifier
 
     public long getAmplifiedValue(double value)
     {
-        return Math.round(0.5F * value * ampFactor);
+        return Math.round(value * ampFactor);
     }
 }
