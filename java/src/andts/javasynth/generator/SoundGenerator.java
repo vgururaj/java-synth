@@ -19,7 +19,7 @@ public class SoundGenerator
         this.freqLfo = freqLfo;
         this.gainLfo = gainLfo;
         this.initialFreq = osc.getFrequency();
-        gain = new Gain(1f);
+        gain = new Gain(0.2f);
         initialGain = gain.getAmpFactor();
     }
 
