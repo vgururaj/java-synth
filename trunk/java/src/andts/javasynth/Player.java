@@ -6,10 +6,7 @@ import andts.javasynth.generator.LfoGenerator;
 import andts.javasynth.generator.SoundGenerator;
 import andts.javasynth.oscillator.Oscillator;
 import andts.javasynth.oscillator.SimpleOscillator;
-import andts.javasynth.waveform.SawtoothWave;
-import andts.javasynth.waveform.SineWave;
-import andts.javasynth.waveform.TriangleWave;
-import andts.javasynth.waveform.Waveform;
+import andts.javasynth.waveform.*;
 
 import javax.sound.sampled.*;
 import java.io.IOException;
@@ -46,12 +43,12 @@ public class Player
         //first sound generator
         byte[] oscBuffer = new byte[BUFFER_SIZE];
 
-        Waveform wave1 = new SawtoothWave(44100);
-        Oscillator osc1 = new SimpleOscillator(wave1, 100.0F);
+        Waveform wave1 = new SquareWave(44100, 0.5f);
+        Oscillator osc1 = new SimpleOscillator(wave1, 500.0F);
         Gain gain1 = new Gain(0.1f);
         //freq lfo
         Oscillator freqLfoOsc1 = new SimpleOscillator(wave1, 35F);
-        LfoAmplifier freqLfoAmp1 = new LfoAmplifier(0.5f);
+        LfoAmplifier freqLfoAmp1 = new LfoAmplifier(0.f);
         LfoGenerator freqLfo1 = new LfoGenerator(freqLfoOsc1, freqLfoAmp1);
         //gain lfo
         Oscillator gainLfoOsc1 = new SimpleOscillator(wave1, 3F);
@@ -63,17 +60,17 @@ public class Player
         //second sound generator
         byte[] oscBuffer2 = new byte[BUFFER_SIZE];
 
-        Waveform wave2 = new SineWave(44100);
-        Oscillator osc2 = new SimpleOscillator(wave2, 80.0F);
-        Gain gain2 = new Gain(0.1f);
+        Waveform wave2 = new SawtoothWave(44100);
+        Oscillator osc2 = new SimpleOscillator(wave2,500.0F);
+        Gain gain2 = new Gain(0.0f);
         //freq lfo
         Waveform oscWave = new SineWave(44100);
         Oscillator freqLfoOsc2 = new SimpleOscillator(oscWave, 52.3F);
-        LfoAmplifier freqLfoAmp2 = new LfoAmplifier(1f);
+        LfoAmplifier freqLfoAmp2 = new LfoAmplifier(0f);
         LfoGenerator freqLfo2 = new LfoGenerator(freqLfoOsc2, freqLfoAmp2);
         //gain lfo
         Oscillator gainLfoOsc2 = new SimpleOscillator(oscWave, .1F);
-        LfoAmplifier gainLfoAmp2 = new LfoAmplifier(0.3f);
+        LfoAmplifier gainLfoAmp2 = new LfoAmplifier(0.f);
         LfoGenerator gainLfo2 = new LfoGenerator(gainLfoOsc2, gainLfoAmp2);
 
         SoundGenerator gen2 = new SoundGenerator(16, osc2, gain2, freqLfo2, gainLfo2);
