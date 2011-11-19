@@ -12,14 +12,14 @@ public class SoundGenerator
     private Gain gain;
     private float initialGain;
 
-    public SoundGenerator(Oscillator osc, SamplePreAmplifier amp, LfoGenerator freqLfo, LfoGenerator gainLfo)
+    public SoundGenerator(int sampleSize, Oscillator osc, Gain gain, LfoGenerator freqLfo, LfoGenerator gainLfo)
     {
         this.osc = osc;
-        this.amp = amp;
+        this.amp = new SamplePreAmplifier(sampleSize);
         this.freqLfo = freqLfo;
         this.gainLfo = gainLfo;
         this.initialFreq = osc.getFrequency();
-        gain = new Gain(0.2f);
+        this.gain = gain;
         initialGain = gain.getAmpFactor();
     }
 

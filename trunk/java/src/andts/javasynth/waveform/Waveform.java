@@ -16,7 +16,7 @@ public interface Waveform
 
     /**
      * Get the value of this waveform for specific frame
-     * @param frameNumber number of the frame to get the value for
+     * @param frameNumber number of the frame in range [0; frameCount)
      * @return value of the waveform in specified position
      */
     public double getFrameValue(int frameNumber);
