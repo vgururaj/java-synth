@@ -37,17 +37,19 @@ public class Player
 
         System.out.println("outputLine = " + outputLine.toString());
 
-//        outputLine.open();
-//        outputLine.start();
+        outputLine.open();
+        outputLine.start();
 
         //first sound generator
         byte[] oscBuffer = new byte[BUFFER_SIZE];
+
+        Waveform oscWave = new SineWave(44100);
 
         Waveform wave1 = new SquareWave(44100, 0.5f);
         Oscillator osc1 = new SimpleOscillator(wave1, 500.0F);
         Gain gain1 = new Gain(0.1f);
         //freq lfo
-        Oscillator freqLfoOsc1 = new SimpleOscillator(wave1, 35F);
+        Oscillator freqLfoOsc1 = new SimpleOscillator(oscWave, 35F);
         LfoAmplifier freqLfoAmp1 = new LfoAmplifier(0.f);
         LfoGenerator freqLfo1 = new LfoGenerator(freqLfoOsc1, freqLfoAmp1);
         //gain lfo
@@ -64,7 +66,6 @@ public class Player
         Oscillator osc2 = new SimpleOscillator(wave2,500.0F);
         Gain gain2 = new Gain(0.0f);
         //freq lfo
-        Waveform oscWave = new SineWave(44100);
         Oscillator freqLfoOsc2 = new SimpleOscillator(oscWave, 52.3F);
         LfoAmplifier freqLfoAmp2 = new LfoAmplifier(0f);
         LfoGenerator freqLfo2 = new LfoGenerator(freqLfoOsc2, freqLfoAmp2);
@@ -74,18 +75,6 @@ public class Player
         LfoGenerator gainLfo2 = new LfoGenerator(gainLfoOsc2, gainLfoAmp2);
 
         SoundGenerator gen2 = new SoundGenerator(16, osc2, gain2, freqLfo2, gainLfo2);
-
-        for (int i = 0; i < FRAME_BUFFER_SIZE; ++i)
-        {
-            byte[] monoFrame = Util.trimLong(gen1.getNextSample() + gen2.getNextSample());
-            System.arraycopy(monoFrame, 0, oscBuffer, i * 4, 2); //left channel
-            System.arraycopy(monoFrame, 0, oscBuffer, (i * 4) + 2, 2); //right channel
-        }
-
-        outputLine.write(oscBuffer, 0, BUFFER_SIZE);
-
-        outputLine.open();
-        outputLine.start();
 
         while (true)
         {
