@@ -3,41 +3,41 @@ package andts.javasynth.waveform;
 public class SineWave implements Waveform
 {
     private final float[] SINE_VALUES;
-    private final int frameCount;
-    private final int frameRate;
+    private final int sampleCount;
+    private final int sampleRate;
 
-    public SineWave(int frameRate)
+    public SineWave(int sampleRate)
     {
-        this.frameRate = frameRate;
-        this.frameCount = Math.round(frameRate / MIN_FREQUENCY);
+        this.sampleRate = sampleRate;
+        this.sampleCount = Math.round(sampleRate / MIN_FREQUENCY);
 
-        SINE_VALUES = new float[frameCount];
+        SINE_VALUES = new float[sampleCount];
 
-        for (int currentFrame = 0; currentFrame < frameCount; currentFrame++)
+        for (int currentSample = 0; currentSample < sampleCount; currentSample++)
         {
             /**
              * The relative position inside the period
              * of the waveform. 0.0 = beginning, 1.0 = end
              */
-            float periodPosition = (float) currentFrame / (float) frameCount;
+            float periodPosition = (float) currentSample / (float) sampleCount;
             float sineValue = (float) Math.sin(periodPosition * 2.0 * Math.PI);
 
-            SINE_VALUES[currentFrame] = sineValue;
+            SINE_VALUES[currentSample] = sineValue;
         }
     }
 
-    public int getFrameCount()
+    public int getSampleCount()
     {
-        return frameCount;
+        return sampleCount;
     }
 
-    public int getFrameRate()
+    public int getSampleRate()
     {
-        return frameRate;
+        return sampleRate;
     }
 
-    public double getFrameValue(int frameNumber)
+    public float getSampleValue(int sampleNumber)
     {
-        return SINE_VALUES[frameNumber];
+        return SINE_VALUES[sampleNumber];
     }
 }

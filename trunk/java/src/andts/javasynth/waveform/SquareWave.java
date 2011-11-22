@@ -2,34 +2,34 @@ package andts.javasynth.waveform;
 
 public class SquareWave implements Waveform
 {
-    private final int impulseEndFrame;
-    private final int frameCount;
-    private final int frameRate;
+    private final int impulseEndSample;
+    private final int sampleCount;
+    private final int sampleRate;
 
     /**
      *
-     * @param frameRate
+     * @param sampleRate
      * @param impulseLength length of impulse in percents of period length [0; 1]
      */
-    public SquareWave(int frameRate, float impulseLength)
+    public SquareWave(int sampleRate, float impulseLength)
     {
-        this.frameRate = frameRate;
-        this.frameCount = frameRate;
-        this.impulseEndFrame = Math.round(frameRate * impulseLength);
+        this.sampleRate = sampleRate;
+        this.sampleCount = sampleRate;
+        this.impulseEndSample = Math.round(sampleRate * impulseLength);
     }
 
-    public int getFrameCount()
+    public int getSampleCount()
     {
-        return frameCount;
+        return sampleCount;
     }
 
-    public double getFrameValue(int frameNumber)
+    public float getSampleValue(int sampleNumber)
     {
-        return frameNumber < impulseEndFrame ? 1F : -1F;
+        return sampleNumber < impulseEndSample ? 1F : -1F;
     }
 
-    public int getFrameRate()
+    public int getSampleRate()
     {
-        return frameRate;
+        return sampleRate;
     }
 }

@@ -13,8 +13,6 @@ public interface Oscillator
     public void setFrequency(float freq);
 
     public Waveform getWaveform();
-    
-    public void setWaveform(Waveform waveform);
 
-    public double getNextValue();
+    public float getNextValue();
 }

@@ -6,19 +6,15 @@ import andts.javasynth.waveform.Waveform;
 /**
  * Generates low-frequency waveforms, used to automatically change values of sound generators
  */
-public class LfoGenerator
+public class LfoGenerator extends Generator<Float>
 {
-    private Oscillator osc;
-    private LfoAmplifier amp;
-
-    public LfoGenerator(Oscillator osc, LfoAmplifier amp)
+    public LfoGenerator(Oscillator osc, Gain gain)
     {
-        this.osc = osc;
-        this.amp = amp;
+        super(osc, gain);
     }
 
-    public float getNextValue()
+    public Float getNextValue()
     {
-        return amp.getAmplifiedValue((float) osc.getNextValue());
+        return getGain().getAmplifiedValue(getOsc().getNextValue());
     }
 }

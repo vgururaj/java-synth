@@ -2,32 +2,19 @@ package andts.javasynth.generator;
 
 import andts.javasynth.oscillator.Oscillator;
 
-public class SoundGenerator
+public class SoundGenerator extends Generator<Integer>
 {
-    private Oscillator osc;
     private SamplePreAmplifier amp;
-    private LfoGenerator freqLfo;
-    private LfoGenerator gainLfo;
-    private float initialFreq;
-    private Gain gain;
-    private float initialGain;
 
-    public SoundGenerator(int sampleSize, Oscillator osc, Gain gain, LfoGenerator freqLfo, LfoGenerator gainLfo)
+    public SoundGenerator(int sampleSize, Oscillator osc, Gain gain)
     {
-        this.osc = osc;
+        super(osc, gain);
         this.amp = new SamplePreAmplifier(sampleSize);
-        this.freqLfo = freqLfo;
-        this.gainLfo = gainLfo;
-        this.initialFreq = osc.getFrequency();
-        this.gain = gain;
-        initialGain = gain.getAmpFactor();
     }
 
-    public long getNextSample()
+    public Integer getNextValue()
     {
-        osc.setFrequency(initialFreq + initialFreq * freqLfo.getNextValue());
-        gain.setAmpFactor(initialGain + initialGain * gainLfo.getNextValue());
-        double nextValue = gain.getAmplifiedValue((float) osc.getNextValue());
+        float nextValue = getGain().getAmplifiedValue(getOsc().getNextValue());
         return amp.getAmplifiedValue(nextValue);
     }
 }

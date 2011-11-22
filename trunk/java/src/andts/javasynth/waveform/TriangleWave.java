@@ -2,24 +2,24 @@ package andts.javasynth.waveform;
 
 public class TriangleWave implements Waveform
 {
-    private final int     frameRate;
-    private final int     frameCount;
+    private final int sampleRate;
+    private final int sampleCount;
     private final float[] TRIANGLE_VALUES;
 
-    public TriangleWave(int frameRate)
+    public TriangleWave(int sampleRate)
     {
-        this.frameRate = frameRate;
-        this.frameCount = Math.round(frameRate / MIN_FREQUENCY);
+        this.sampleRate = sampleRate;
+        this.sampleCount = Math.round(sampleRate / MIN_FREQUENCY);
 
-        TRIANGLE_VALUES = new float[frameCount];
+        TRIANGLE_VALUES = new float[sampleCount];
 
-        for (int currentFrame = 0; currentFrame < frameCount; currentFrame++)
+        for (int currentSample = 0; currentSample < sampleCount; currentSample++)
         {
             /**
              * The relative position inside the period
              * of the waveform. 0.0 = beginning, 1.0 = end
              */
-            float periodPosition = (float) currentFrame / (float) frameCount;
+            float periodPosition = (float) currentSample / (float) sampleCount;
             float triangleValue;
 
             if (periodPosition < 0.25F)
@@ -35,22 +35,22 @@ public class TriangleWave implements Waveform
                 triangleValue = 4.0F * (periodPosition - 1.0F);
             }
 
-            TRIANGLE_VALUES[currentFrame] = triangleValue;
+            TRIANGLE_VALUES[currentSample] = triangleValue;
         }
     }
 
-    public int getFrameCount()
+    public int getSampleCount()
     {
-        return frameCount;
+        return sampleCount;
     }
 
-    public double getFrameValue(int frameNumber)
+    public float getSampleValue(int sampleNumber)
     {
-        return TRIANGLE_VALUES[frameNumber];
+        return TRIANGLE_VALUES[sampleNumber];
     }
 
-    public int getFrameRate()
+    public int getSampleRate()
     {
-        return frameRate;
+        return sampleRate;
     }
 }

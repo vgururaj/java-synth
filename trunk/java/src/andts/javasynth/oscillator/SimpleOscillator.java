@@ -14,8 +14,8 @@ public class SimpleOscillator implements Oscillator
     {
         this.wave = wave;
         this.freq = freq;
-        this.frameCount = wave.getFrameCount();
-        this.frameSkip = calcFrameSkip(wave.getFrameRate(), this.freq);
+        this.frameCount = wave.getSampleCount();
+        this.frameSkip = calcFrameSkip(wave.getSampleRate(), this.freq);
     }
 
     public float getFrequency()
@@ -26,13 +26,13 @@ public class SimpleOscillator implements Oscillator
     public void setFrequency(float freq)
     {
         this.freq = freq;
-        this.frameSkip = calcFrameSkip(wave.getFrameRate(), freq);
+        this.frameSkip = calcFrameSkip(wave.getSampleRate(), freq);
     }
 
-    private int calcFrameSkip(int frameRate, float freq)
+    private int calcFrameSkip(int sampleRate, float freq)
     {
-        int oneWavePeriodInFrames = Math.round(frameRate / freq);
-        return frameCount / oneWavePeriodInFrames;
+        int oneWavePeriodInSamples = Math.round(sampleRate / freq);
+        return frameCount / oneWavePeriodInSamples;
     }
 
     public Waveform getWaveform()
@@ -40,21 +40,21 @@ public class SimpleOscillator implements Oscillator
         return wave;
     }
 
-    public void setWaveform(Waveform waveform)
+    /*public void setWaveform(Waveform waveform)
     {
         this.wave = waveform;
-        this.frameCount = waveform.getFrameCount();
-        this.frameSkip = calcFrameSkip(wave.getFrameRate(), freq);
-    }
+        this.frameCount = waveform.getSampleCount();
+        this.frameSkip = calcFrameSkip(wave.getSampleRate(), freq);
+    }*/
 
-    public double getNextValue()
+    public float getNextValue()
     {
         if (currentFrame >= frameCount)
         {
             currentFrame = 0;
         }
 
-        double result =  wave.getFrameValue(currentFrame);
+        float result =  wave.getSampleValue(currentFrame);
         currentFrame = currentFrame + frameSkip;
 
         return result;
