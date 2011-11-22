@@ -83,6 +83,7 @@ public class Player
                 System.arraycopy(monoFrame, 0, oscBuffer, (i * 4) + 2, 2); //right channel
             }
 
+            //sequencer :)
             if (iteration >= noteLen && iteration < 2 * noteLen)
             {
                 sg1.getOsc().setFrequency(80F);
