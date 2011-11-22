@@ -1,5 +1,6 @@
 package andts.javasynth.generator;
 
+import andts.javasynth.JavaSynthException;
 import andts.javasynth.oscillator.Oscillator;
 import andts.javasynth.waveform.Waveform;
 
@@ -11,6 +12,11 @@ public class LfoGenerator extends Generator<Float>
     public LfoGenerator(Oscillator osc, Gain gain)
     {
         super(osc, gain);
+
+        if (osc.getFrequency() >= 1000)
+        {
+            throw new JavaSynthException("Frequency of the Oscillator is too high for LFO!");
+        }
     }
 
     public Float getNextValue()

@@ -6,8 +6,9 @@ import andts.javasynth.generator.SoundGenerator;
 import andts.javasynth.oscillator.AutomatedOscillator;
 import andts.javasynth.oscillator.Oscillator;
 import andts.javasynth.oscillator.SimpleOscillator;
+import andts.javasynth.waveform.SawtoothWave;
 import andts.javasynth.waveform.SineWave;
-import andts.javasynth.waveform.SquareWave;
+import andts.javasynth.waveform.TriangleWave;
 import andts.javasynth.waveform.Waveform;
 
 import javax.sound.sampled.*;
@@ -42,76 +43,69 @@ public class Player
         outputLine.open();
         outputLine.start();
 
-        /*//first sound generator
-        Waveform oscWave = new SawtoothWave(44100);
-
-        Waveform wave1 = new SquareWave(44100, 0.5f);
-        Oscillator osc1 = new SimpleOscillator(wave1, 100.0F);
-        Gain gain1 = new Gain(0.1f);
-        //freq lfo
-        Oscillator freqLfoOsc1 = new SimpleOscillator(oscWave, 5F);
-        LfoAmplifier freqLfoAmp1 = new LfoAmplifier(0.5f);
-        LfoGenerator freqLfo1 = new LfoGenerator(freqLfoOsc1, freqLfoAmp1);
-        //gain lfo
-        Oscillator gainLfoOsc1 = new SimpleOscillator(wave1, 7F);
-        LfoAmplifier gainLfoAmp1 = new LfoAmplifier(0.5f);
-        LfoGenerator gainLfo1 = new LfoGenerator(gainLfoOsc1, gainLfoAmp1);
-
-        SoundGenerator gen1 = new SoundGenerator(16, osc1, gain1, freqLfo1, gainLfo1);
-
-        //second sound generator
-        Waveform wave2 = new SawtoothWave(44100);
-        Oscillator osc2 = new SimpleOscillator(wave2, 100.0F);
-        Gain gain2 = new Gain(0.1f);
-        //freq lfo
-        Oscillator freqLfoOsc2 = new SimpleOscillator(oscWave, 3F);
-        LfoAmplifier freqLfoAmp2 = new LfoAmplifier(0.8f);
-        LfoGenerator freqLfo2 = new LfoGenerator(freqLfoOsc2, freqLfoAmp2);
-        //gain lfo
-        Oscillator gainLfoOsc2 = new SimpleOscillator(oscWave, .07F);
-        LfoAmplifier gainLfoAmp2 = new LfoAmplifier(1f);
-        LfoGenerator gainLfo2 = new LfoGenerator(gainLfoOsc2, gainLfoAmp2);
-
-        SoundGenerator gen2 = new SoundGenerator(16, osc2, gain2, freqLfo2, gainLfo2);*/
-
-        Waveform osc1Wave = new SquareWave(44100, 0.5F);
+        Waveform osc1Wave = new TriangleWave(44100);
         LfoGenerator osc1Lfo = new LfoGenerator(
-                new SimpleOscillator(new SineWave(44100), 3F),
-                new Gain(0.5F));
+                new SimpleOscillator(new SineWave(44100), 6F),
+                new Gain(0.0F));
         Oscillator osc1 = new AutomatedOscillator(osc1Wave, 100F, osc1Lfo);
 
         LfoGenerator gain1Lfo = new LfoGenerator(
-                new SimpleOscillator(new SineWave(44100), 5F),
-                new Gain(0.1F));
+                new SimpleOscillator(new TriangleWave(44100), 7F),
+                new Gain(0.5F));
         Gain gain1 = new Gain(0.1F, gain1Lfo);
 
         SoundGenerator sg1 = new SoundGenerator(16, osc1, gain1);
 
+        Waveform osc2Wave = new TriangleWave(44100);
+        LfoGenerator osc2Lfo = new LfoGenerator(
+                new SimpleOscillator(new SawtoothWave(44100), 3F),
+                new Gain(0.0F));
+        Oscillator osc2 = new AutomatedOscillator(osc2Wave, 200F, osc2Lfo);
+
+        LfoGenerator gain2Lfo = new LfoGenerator(
+                new SimpleOscillator(new TriangleWave(44100), 7F),
+                new Gain(0.5F));
+        Gain gain2 = new Gain(0.1F, gain2Lfo);
+
+        SoundGenerator sg2 = new SoundGenerator(16, osc2, gain2);
+
         byte[] oscBuffer = new byte[BUFFER_SIZE];
         long iteration = 0;
+        int noteLen = 6;
         while (true)
         {
             outputLine.write(oscBuffer, 0, BUFFER_SIZE);
 
             for (int i = 0; i < FRAME_BUFFER_SIZE; ++i)
             {
-                byte[] monoFrame = Util.trimLong(sg1.getNextValue());
+                byte[] monoFrame = Util.trimLong(sg1.getNextValue() + sg2.getNextValue());
                 System.arraycopy(monoFrame, 0, oscBuffer, i * 4, 2); //left channel
                 System.arraycopy(monoFrame, 0, oscBuffer, (i * 4) + 2, 2); //right channel
             }
 
-            if (iteration > 5 && iteration < 10)
+            if (iteration >= noteLen && iteration < 2 * noteLen)
             {
-                sg1.getOsc().setFrequency(200F);
+                sg1.getOsc().setFrequency(80F);
+                sg2.getOsc().setFrequency(160F);
             }
-            else if (iteration >= 10 && iteration < 15)
+            else if (iteration >= 2 * noteLen && iteration < 3 * noteLen)
             {
-                osc1Lfo.getOsc().setFrequency(7F);
+                sg1.getOsc().setFrequency(120F);
+                sg2.getOsc().setFrequency(240F);
             }
-            else if (iteration >= 15)
+            else if (iteration >= 3 * noteLen && iteration < 4 * noteLen)
             {
                 sg1.getOsc().setFrequency(100F);
-                osc1Lfo.getOsc().setFrequency(3F);
+                sg2.getOsc().setFrequency(300F);
+                osc1Lfo.getGain().setAmpFactor(0.2F);
+                osc2Lfo.getGain().setAmpFactor(0.4F);
+            }
+            else if (iteration == 4 * noteLen)
+            {
+                sg1.getOsc().setFrequency(100F);
+                sg2.getOsc().setFrequency(200F);
+                osc1Lfo.getGain().setAmpFactor(0.0F);
+                osc2Lfo.getGain().setAmpFactor(0.0F);
                 iteration = 0;
             }
 
