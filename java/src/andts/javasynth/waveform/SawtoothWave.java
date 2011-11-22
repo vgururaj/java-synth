@@ -2,24 +2,24 @@ package andts.javasynth.waveform;
 
 public class SawtoothWave implements Waveform
 {
-    private final int     frameRate;
-    private final int     frameCount;
+    private final int sampleRate;
+    private final int sampleCount;
     private final float[] SAWTOOTH_VALUES;
 
-    public SawtoothWave(int frameRate)
+    public SawtoothWave(int sampleRate)
     {
-        this.frameRate = frameRate;
-        this.frameCount = Math.round(frameRate / MIN_FREQUENCY);
+        this.sampleRate = sampleRate;
+        this.sampleCount = Math.round(sampleRate / MIN_FREQUENCY);
 
-        SAWTOOTH_VALUES = new float[frameCount];
+        SAWTOOTH_VALUES = new float[sampleCount];
 
-        for (int currentFrame = 0; currentFrame < frameCount; currentFrame++)
+        for (int currentSample = 0; currentSample < sampleCount; currentSample++)
         {
             /**
              * The relative position inside the period
              * of the waveform. 0.0 = beginning, 1.0 = end
              */
-            float periodPosition = (float) currentFrame / (float) frameCount;
+            float periodPosition = (float) currentSample / (float) sampleCount;
             float sawtoothValue;
 
             if (periodPosition < 0.5F)
@@ -31,22 +31,22 @@ public class SawtoothWave implements Waveform
                 sawtoothValue = 2.0F * (periodPosition - 1.0F);
             }
 
-            SAWTOOTH_VALUES[currentFrame] = sawtoothValue;
+            SAWTOOTH_VALUES[currentSample] = sawtoothValue;
         }
     }
 
-    public int getFrameCount()
+    public int getSampleCount()
     {
-        return frameCount;
+        return sampleCount;
     }
 
-    public double getFrameValue(int frameNumber)
+    public float getSampleValue(int sampleNumber)
     {
-        return SAWTOOTH_VALUES[frameNumber];
+        return SAWTOOTH_VALUES[sampleNumber];
     }
 
-    public int getFrameRate()
+    public int getSampleRate()
     {
-        return frameRate;
+        return sampleRate;
     }
 }

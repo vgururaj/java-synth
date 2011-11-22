@@ -5,15 +5,15 @@ import andts.javasynth.oscillator.Oscillator;
 /**
  * Creates audio samples. Gets wave of some form and frequency from oscillator, applies lfo(+adsr later) and amplifies it.
  */
-public abstract class Generator
+public abstract class Generator<T>
 {
-    protected Oscillator osc;
-    protected Amplifier amp;
+    private Oscillator osc;
+    private Gain gain;
 
-    /*public Generator(Oscillator osc, SamplePreAmplifier amp)
+    public Generator(Oscillator osc, Gain gain)
     {
         this.osc = osc;
-        this.amp = amp;
+        this.gain = gain;
     }
 
     public Oscillator getOsc()
@@ -21,8 +21,10 @@ public abstract class Generator
         return osc;
     }
 
-    public Amplifier getAmp()
+    public Gain getGain()
     {
-        return amp;
-    }*/
+        return gain;
+    }
+
+    public abstract T getNextValue();
 }
