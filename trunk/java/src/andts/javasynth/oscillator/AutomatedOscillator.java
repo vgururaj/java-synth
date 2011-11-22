@@ -19,7 +19,6 @@ public class AutomatedOscillator extends SimpleOscillator
     public void setFrequency(float freq)
     {
         baseFreq = freq;
-        super.setFrequency(freq);
     }
 
     @Override

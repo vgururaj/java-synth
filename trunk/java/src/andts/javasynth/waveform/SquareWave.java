@@ -18,6 +18,11 @@ public class SquareWave implements Waveform
         this.impulseEndSample = Math.round(sampleRate * impulseLength);
     }
 
+    public SquareWave(int sampleRate)
+    {
+        this(sampleRate, 0.5F);
+    }
+
     public int getSampleCount()
     {
         return sampleCount;
