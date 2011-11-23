@@ -3,7 +3,7 @@ package andts.javasynth.generator;
 import andts.javasynth.oscillator.Oscillator;
 
 /**
- * Creates audio samples. Gets wave of some form and frequency from oscillator, applies lfo(+adsr later) and amplifies it.
+ * Creates audio samples. Gets wave of some form and frequency from oscillator, and amplifies it.
  */
 public abstract class Generator<T>
 {

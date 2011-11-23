@@ -3,6 +3,9 @@ package andts.javasynth.oscillator;
 import andts.javasynth.generator.LfoGenerator;
 import andts.javasynth.waveform.Waveform;
 
+/**
+ * Extends SimpleOscillator, can change frequency with help of LFO
+ */
 public class AutomatedOscillator extends SimpleOscillator
 {
     private LfoGenerator lfo;
@@ -15,6 +18,10 @@ public class AutomatedOscillator extends SimpleOscillator
         baseFreq = freq;
     }
 
+    /**
+     * Set base frequency from which LFO may vary
+     * @param freq base frequency of oscillator
+     */
     @Override
     public void setFrequency(float freq)
     {

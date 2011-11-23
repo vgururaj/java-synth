@@ -17,8 +17,8 @@ import java.util.Arrays;
 
 public class Player
 {
-    private static final int BUFFER_SIZE = 64000;
-    private static final int FRAME_BUFFER_SIZE = 16000;
+    private static final int BUFFER_SIZE = 44100;
+    private static final int FRAME_BUFFER_SIZE = 11025;
 
     public static void main(String[] args) throws IOException, LineUnavailableException
     {
@@ -50,7 +50,7 @@ public class Player
         Oscillator osc1 = new AutomatedOscillator(osc1Wave, 100F, osc1Lfo);
 
         LfoGenerator gain1Lfo = new LfoGenerator(
-                new SimpleOscillator(new TriangleWave(44100), 7F),
+                new SimpleOscillator(new TriangleWave(44100), 6F),
                 new Gain(0.5F));
         Gain gain1 = new Gain(0.1F, gain1Lfo);
 
@@ -63,7 +63,7 @@ public class Player
         Oscillator osc2 = new AutomatedOscillator(osc2Wave, 200F, osc2Lfo);
 
         LfoGenerator gain2Lfo = new LfoGenerator(
-                new SimpleOscillator(new TriangleWave(44100), 7F),
+                new SimpleOscillator(new TriangleWave(44100), 6F),
                 new Gain(0.5F));
         Gain gain2 = new Gain(0.1F, gain2Lfo);
 
@@ -71,7 +71,7 @@ public class Player
 
         byte[] oscBuffer = new byte[BUFFER_SIZE];
         long iteration = 0;
-        int noteLen = 6;
+        int noteLen = 7;
         while (true)
         {
             outputLine.write(oscBuffer, 0, BUFFER_SIZE);

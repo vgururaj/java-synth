@@ -2,6 +2,9 @@ package andts.javasynth.oscillator;
 
 import andts.javasynth.waveform.Waveform;
 
+/**
+ * Simple Oscillator that can't change frequency by itself
+ */
 public class SimpleOscillator implements Oscillator
 {
     private Waveform wave;
@@ -39,13 +42,6 @@ public class SimpleOscillator implements Oscillator
     {
         return wave;
     }
-
-    /*public void setWaveform(Waveform waveform)
-    {
-        this.wave = waveform;
-        this.frameCount = waveform.getSampleCount();
-        this.frameSkip = calcFrameSkip(wave.getSampleRate(), freq);
-    }*/
 
     public float getNextValue()
     {
