@@ -7,7 +7,7 @@ import andts.javasynth.waveform.SineWave;
 public class SoundGenerator extends Generator<Integer>
 {
     private SamplePreAmplifier amp;
-    private MoogVcfFilter filter;
+    private MoogVcfFilter2 filter;
 
     /**
      * Creates new SoundGenerator
@@ -20,9 +20,9 @@ public class SoundGenerator extends Generator<Integer>
     {
         super(osc, gain);
         this.amp = new SamplePreAmplifier(sampleSize);
-        this.filter = new MoogVcfFilter(0.1F, 1F,
+        this.filter = new MoogVcfFilter2(0.101F, .3F, MoogVcfFilter2.FilterMode.LOWPASS,
                                         new LfoGenerator(
-                                                new SimpleOscillator(new SineWave(44100), 4.5F),
+                                                new SimpleOscillator(new SineWave(44100), 2.5F),
                                                 new Gain(0.95F)));
     }
 

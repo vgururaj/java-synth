@@ -48,7 +48,7 @@ public class Player
 
         LfoGenerator gain1Lfo = new LfoGenerator(
                 new SimpleOscillator(new TriangleWave(44100), 6F),
-                new Gain(0.5F));
+                new Gain(0.F));
         Gain gain1 = new Gain(0.1F, gain1Lfo);
 
         SoundGenerator sg1 = new SoundGenerator(16, osc1, gain1);
@@ -75,7 +75,7 @@ public class Player
 
             for (int i = 0; i < FRAME_BUFFER_SIZE; ++i)
             {
-                byte[] monoFrame = Util.trimLong(sg1.getNextValue() + sg2.getNextValue());
+                byte[] monoFrame = Util.trimLong(sg1.getNextValue()/* + sg2.getNextValue()*/);
                 System.arraycopy(monoFrame, 0, oscBuffer, i * 4, 2); //left channel
                 System.arraycopy(monoFrame, 0, oscBuffer, (i * 4) + 2, 2); //right channel
             }
