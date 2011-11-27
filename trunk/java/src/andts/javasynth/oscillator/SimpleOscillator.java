@@ -1,5 +1,6 @@
 package andts.javasynth.oscillator;
 
+import andts.javasynth.parameter.Parameter;
 import andts.javasynth.waveform.Waveform;
 
 /**
@@ -8,28 +9,25 @@ import andts.javasynth.waveform.Waveform;
 public class SimpleOscillator implements Oscillator
 {
     private Waveform wave;
-    private float freq = Waveform.MIN_FREQUENCY;
-    private int frameSkip = 0;
+    private Parameter<Float> freq;
     private int currentFrame = 0;
     private int frameCount = 0;
 
-    public SimpleOscillator(Waveform wave, float freq)
+    public SimpleOscillator(Waveform wave, Parameter<Float> freq)
     {
         this.wave = wave;
         this.freq = freq;
         this.frameCount = wave.getSampleCount();
-        this.frameSkip = calcFrameSkip(wave.getSampleRate(), this.freq);
     }
 
     public float getFrequency()
     {
-        return freq;
+        return freq.getValue();
     }
 
     public void setFrequency(float freq)
     {
-        this.freq = freq;
-        this.frameSkip = calcFrameSkip(wave.getSampleRate(), freq);
+        this.freq.setValue(freq);
     }
 
     private int calcFrameSkip(int sampleRate, float freq)
@@ -43,16 +41,19 @@ public class SimpleOscillator implements Oscillator
         return wave;
     }
 
+    public void reset()
+    {
+        currentFrame = 0;
+    }
+
     public float getNextValue()
     {
         if (currentFrame >= frameCount)
         {
             currentFrame = 0;
         }
-
         float result =  wave.getSampleValue(currentFrame);
-        currentFrame = currentFrame + frameSkip;
-
+        currentFrame = currentFrame + calcFrameSkip(wave.getSampleRate(), freq.getValue());
         return result;
     }
 }

@@ -15,4 +15,6 @@ public interface Oscillator
     public Waveform getWaveform();
 
     public float getNextValue();
+
+    public void reset();
 }
