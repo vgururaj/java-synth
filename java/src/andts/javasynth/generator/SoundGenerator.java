@@ -2,9 +2,8 @@ package andts.javasynth.generator;
 
 import andts.javasynth.oscillator.Oscillator;
 import andts.javasynth.oscillator.SimpleOscillator;
+import andts.javasynth.parameter.ConstantParameter;
 import andts.javasynth.waveform.SineWave;
-
-import javax.sound.sampled.AudioInputStream;
 
 public class SoundGenerator extends Generator<Integer>
 {
@@ -22,17 +21,19 @@ public class SoundGenerator extends Generator<Integer>
     {
         super(osc, gain);
         this.amp = new SamplePreAmplifier(sampleSize);
-        this.filter = new MoogVcfFilter2(0.1F, .3F, MoogVcfFilter2.FilterMode.LOWPASS,
-                                        new LfoGenerator(
-                                                new SimpleOscillator(new SineWave(44100), 52F),
-                                                new Gain(0.7F)));
+        /*this.filter = new MoogVcfFilter2(0.05F, .3F, MoogVcfFilter2.FilterMode.LOWPASS,
+                                         new LfoGenerator(
+                                                 new SimpleOscillator(
+                                                         new SineWave(44100),
+                                                         new ConstantParameter<Float>(2F)),
+                                                 new Gain(0.7F)));*/
     }
 
     public Integer getNextValue()
     {
-        float nextValue = (float) filter.filter(
-                getGain().getAmplifiedValue(getOsc().getNextValue()));
-        //        float nextValue = getGain().getAmplifiedValue(getOsc().getNextValue());
+        //        float nextValue = (float) filter.filter(
+        //                getGain().getAmplifiedValue(getOsc().getNextValue()));
+        float nextValue = getGain().getAmplifiedValue(getOsc().getNextValue());
         return amp.getAmplifiedValue(nextValue);
     }
 }

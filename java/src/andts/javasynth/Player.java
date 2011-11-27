@@ -3,10 +3,13 @@ package andts.javasynth;
 import andts.javasynth.generator.Gain;
 import andts.javasynth.generator.LfoGenerator;
 import andts.javasynth.generator.SoundGenerator;
-import andts.javasynth.oscillator.AutomatedOscillator;
 import andts.javasynth.oscillator.Oscillator;
 import andts.javasynth.oscillator.SimpleOscillator;
-import andts.javasynth.waveform.*;
+import andts.javasynth.parameter.ConstantParameter;
+import andts.javasynth.parameter.LfoAutomatedParameter;
+import andts.javasynth.waveform.SawtoothWave;
+import andts.javasynth.waveform.SineWave;
+import andts.javasynth.waveform.Waveform;
 
 import javax.sound.sampled.*;
 import java.io.IOException;
@@ -14,7 +17,8 @@ import java.util.Arrays;
 
 public class Player
 {
-    private static final int BUFFER_SIZE = 44100;
+    public static final int SAMPLE_RATE = 44100;
+    private static final int BUFFER_SIZE = SAMPLE_RATE;
     private static final int FRAME_BUFFER_SIZE = 11025;
 
     public static void main(String[] args) throws IOException, LineUnavailableException
@@ -40,31 +44,35 @@ public class Player
         outputLine.open();
         outputLine.start();
 
-        Waveform osc1Wave = new SquareWave(44100);
+        Waveform osc1Wave = new SawtoothWave(SAMPLE_RATE);
         LfoGenerator osc1Lfo = new LfoGenerator(
-                new SimpleOscillator(new SawtoothWave(44100), 6F),
-                new Gain(0.0F));
-        Oscillator osc1 = new AutomatedOscillator(osc1Wave, 100F, osc1Lfo);
-
-        LfoGenerator gain1Lfo = new LfoGenerator(
-                new SimpleOscillator(new TriangleWave(44100), 6F),
+                new SimpleOscillator(new SineWave(SAMPLE_RATE), new ConstantParameter<Float>(6F)),
                 new Gain(0.5F));
-        Gain gain1 = new Gain(0.1F, gain1Lfo);
+        Oscillator osc1 = new SimpleOscillator(osc1Wave,
+                                               new LfoAutomatedParameter(
+                                                       new ConstantParameter<Float>(500F), osc1Lfo));
+
+        //        LfoGenerator gain1Lfo = new LfoGenerator(
+        //                new SimpleOscillator(new TriangleWave(SAMPLE_RATE), new ConstantParameter<Float>(6F)),
+        //                new Gain(0.F));
+        Gain gain1 = new Gain(0.1F);
 
         SoundGenerator sg1 = new SoundGenerator(16, osc1, gain1);
 
-        Waveform osc2Wave = new SawtoothWave(44100);
+        /*Waveform osc2Wave = new SawtoothWave(SAMPLE_RATE);
         LfoGenerator osc2Lfo = new LfoGenerator(
-                new SimpleOscillator(new SawtoothWave(44100), 3F),
+                new SimpleOscillator(
+                        new SawtoothWave(SAMPLE_RATE),
+                        new ConstantParameter<Float>(3F)),
                 new Gain(0.0F));
-        Oscillator osc2 = new AutomatedOscillator(osc2Wave, 200F, osc2Lfo);
+        Oscillator osc2 = new AutomatedOscillator(osc2Wave, new ConstantParameter<Float>(200F), osc2Lfo);
 
         LfoGenerator gain2Lfo = new LfoGenerator(
-                new SimpleOscillator(new TriangleWave(44100), .3F),
+                new SimpleOscillator(new TriangleWave(SAMPLE_RATE), new ConstantParameter<Float>(.3F)),
                 new Gain(1F));
         Gain gain2 = new Gain(0.1F, gain2Lfo);
 
-        SoundGenerator sg2 = new SoundGenerator(16, osc2, gain2);
+        SoundGenerator sg2 = new SoundGenerator(16, osc2, gain2);*/
 
         byte[] oscBuffer = new byte[BUFFER_SIZE];
         long iteration = 0;
@@ -75,12 +83,12 @@ public class Player
 
             for (int i = 0; i < FRAME_BUFFER_SIZE; ++i)
             {
-                byte[] monoFrame = Util.trimLong(sg1.getNextValue() + sg2.getNextValue());
+                byte[] monoFrame = Util.trimLong(sg1.getNextValue()/* + sg2.getNextValue()*/);
                 System.arraycopy(monoFrame, 0, oscBuffer, i * 4, 2); //left channel
                 System.arraycopy(monoFrame, 0, oscBuffer, (i * 4) + 2, 2); //right channel
             }
 
-            //sequencer :)
+            /*//sequencer :)
             if (iteration >= noteLen && iteration < 2 * noteLen)
             {
                 sg1.getOsc().setFrequency(80F);
@@ -107,9 +115,9 @@ public class Player
                 iteration = 0;
             }
 
-            iteration++;
+            iteration++;*/
         }
 
-//        AudioSystem.w
+        //        AudioSystem.w
     }
 }

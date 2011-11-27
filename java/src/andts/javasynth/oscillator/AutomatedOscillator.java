@@ -1,6 +1,8 @@
 package andts.javasynth.oscillator;
 
 import andts.javasynth.generator.LfoGenerator;
+import andts.javasynth.parameter.ConstantParameter;
+import andts.javasynth.parameter.Parameter;
 import andts.javasynth.waveform.Waveform;
 
 /**
@@ -9,11 +11,11 @@ import andts.javasynth.waveform.Waveform;
 public class AutomatedOscillator extends SimpleOscillator
 {
     private LfoGenerator lfo;
-    private float baseFreq;
+    private Parameter<Float> baseFreq;
 
-    public AutomatedOscillator(Waveform wave, float freq, LfoGenerator lfo)
+    public AutomatedOscillator(Waveform wave, Parameter<Float> freq, LfoGenerator lfo)
     {
-        super(wave, freq);
+        super(wave, new ConstantParameter<Float>(freq.getValue()));
         this.lfo = lfo;
         baseFreq = freq;
     }
@@ -25,14 +27,14 @@ public class AutomatedOscillator extends SimpleOscillator
     @Override
     public void setFrequency(float freq)
     {
-        baseFreq = freq;
+        baseFreq.setValue(freq);
     }
 
     @Override
     public float getNextValue()
     {
         float value = super.getNextValue();
-        float newFreq = baseFreq * (1 + lfo.getNextValue());
+        float newFreq = baseFreq.getValue() * (1 + lfo.getNextValue());
         super.setFrequency(newFreq);
         return value;
     }
