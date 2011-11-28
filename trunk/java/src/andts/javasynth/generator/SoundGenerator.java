@@ -1,11 +1,10 @@
 package andts.javasynth.generator;
 
+import andts.javasynth.effects.Gain;
+import andts.javasynth.effects.MoogVcfFilter2;
 import andts.javasynth.oscillator.Oscillator;
-import andts.javasynth.oscillator.SimpleOscillator;
-import andts.javasynth.parameter.ConstantParameter;
-import andts.javasynth.waveform.SineWave;
 
-public class SoundGenerator extends Generator<Integer>
+public class SoundGenerator extends OscillatedGenerator<Integer>
 {
     private SamplePreAmplifier amp;
     private MoogVcfFilter2 filter;

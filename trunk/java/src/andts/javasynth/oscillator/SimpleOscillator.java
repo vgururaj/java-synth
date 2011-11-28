@@ -4,12 +4,15 @@ import andts.javasynth.parameter.Parameter;
 import andts.javasynth.waveform.Waveform;
 
 /**
- * Simple Oscillator that can't change frequency by itself
+ * Simple Oscillator that gets samples from passed waveform
+ * to create wave of some frequency
  */
 public class SimpleOscillator implements Oscillator
 {
     private Waveform wave;
+    private int sampleRate;
     private Parameter<Float> freq;
+    private float currentFreq;
     private int currentFrame = 0;
     private int frameCount = 0;
 
@@ -18,11 +21,12 @@ public class SimpleOscillator implements Oscillator
         this.wave = wave;
         this.freq = freq;
         this.frameCount = wave.getSampleCount();
+        this.sampleRate = wave.getSampleRate();
     }
 
     public float getFrequency()
     {
-        return freq.getValue();
+        return currentFreq;
     }
 
     public void setFrequency(float freq)
@@ -30,9 +34,9 @@ public class SimpleOscillator implements Oscillator
         this.freq.setValue(freq);
     }
 
-    private int calcFrameSkip(int sampleRate, float freq)
+    private int calcFrameSkip()
     {
-        int oneWavePeriodInSamples = Math.round(sampleRate / freq);
+        int oneWavePeriodInSamples = Math.round(sampleRate / currentFreq);
         return frameCount / oneWavePeriodInSamples;
     }
 
@@ -52,8 +56,12 @@ public class SimpleOscillator implements Oscillator
         {
             currentFrame = 0;
         }
+
         float result =  wave.getSampleValue(currentFrame);
-        currentFrame = currentFrame + calcFrameSkip(wave.getSampleRate(), freq.getValue());
+
+        currentFreq = freq.getValue();
+        currentFrame = currentFrame + calcFrameSkip();
+
         return result;
     }
 }
