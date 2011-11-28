@@ -1,13 +1,13 @@
 package andts.javasynth.generator;
 
 import andts.javasynth.JavaSynthException;
+import andts.javasynth.effects.Gain;
 import andts.javasynth.oscillator.Oscillator;
-import andts.javasynth.waveform.Waveform;
 
 /**
  * Generates low-frequency waveforms, used to automatically change values of sound generators
  */
-public class LfoGenerator extends Generator<Float>
+public class LfoGenerator extends OscillatedGenerator<Float>
 {
     public LfoGenerator(Oscillator osc, Gain gain)
     {

@@ -1,6 +1,6 @@
 package andts.javasynth;
 
-import andts.javasynth.generator.Gain;
+import andts.javasynth.effects.Gain;
 import andts.javasynth.generator.LfoGenerator;
 import andts.javasynth.generator.SoundGenerator;
 import andts.javasynth.oscillator.Oscillator;
@@ -47,7 +47,7 @@ public class Player
         Waveform osc1Wave = new SawtoothWave(SAMPLE_RATE);
         LfoGenerator osc1Lfo = new LfoGenerator(
                 new SimpleOscillator(new SineWave(SAMPLE_RATE), new ConstantParameter<Float>(6F)),
-                new Gain(0.5F));
+                new Gain(new ConstantParameter<Float>(.5F)));
         Oscillator osc1 = new SimpleOscillator(osc1Wave,
                                                new LfoAutomatedParameter(
                                                        new ConstantParameter<Float>(500F), osc1Lfo));
@@ -55,7 +55,7 @@ public class Player
         //        LfoGenerator gain1Lfo = new LfoGenerator(
         //                new SimpleOscillator(new TriangleWave(SAMPLE_RATE), new ConstantParameter<Float>(6F)),
         //                new Gain(0.F));
-        Gain gain1 = new Gain(0.1F);
+        Gain gain1 = new Gain(new ConstantParameter<Float>(0.1F));
 
         SoundGenerator sg1 = new SoundGenerator(16, osc1, gain1);
 

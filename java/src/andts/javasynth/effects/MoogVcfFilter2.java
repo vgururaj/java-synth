@@ -1,36 +1,34 @@
-package andts.javasynth.generator;
+package andts.javasynth.effects;
 
 import andts.javasynth.JavaSynthException;
+import andts.javasynth.parameter.Parameter;
 
 /**
- * Initial copyright: \n
- * Moog 24 dB/oct resonant lowpass VCF \n
- * References: CSound source code, Stilson/Smith CCRMA paper. \n
- * Modified by paul.kellett@maxim.abel.co.uk July 2000 \n
+ * Initial &copy;:<br />
+ * Moog 24 dB/oct resonant lowpass VCF <br />
+ * References: CSound source code, Stilson/Smith CCRMA paper. <br />
+ * Modified by paul.kellett@maxim.abel.co.uk July 2000 <br />
  */
 public class MoogVcfFilter2
 {
-
-    // Moog 24 dB/oct resonant lowpass VCF
-    // References: CSound source code, Stilson/Smith CCRMA paper.
-    // Modified by paul.kellett@maxim.abel.co.uk July 2000
-
     private float f, p, q; //filter coefficients
     private float[] b; //filter buffers
 
-    private float cutoffFrequency;
-    private float baseCutoffFrequency;
-    private LfoGenerator cutoffLfo;
-    private float resonance;
+    private Parameter<Float> cutoffFrequency;
+    private float currentCutoffFreq;
+
+    private Parameter<Float> resonance;
+    private float currentResonance;
+
     private FilterMode mode;
 
-    public MoogVcfFilter2(float cutoffFrequency, float resonance, FilterMode mode, LfoGenerator lfo)
+    public MoogVcfFilter2(Parameter<Float> cutoffFrequency, Parameter<Float> resonance, FilterMode mode)
     {
         this.cutoffFrequency = cutoffFrequency;
-        this.baseCutoffFrequency = cutoffFrequency;
         this.resonance = resonance;
         this.mode = mode;
-        this.cutoffLfo = lfo;
+        currentCutoffFreq = cutoffFrequency.getValue();
+        currentResonance = resonance.getValue();
 
         calculateCoefficients();
 
@@ -42,10 +40,11 @@ public class MoogVcfFilter2
      */
     private void calculateCoefficients()
     {
-        q = 1.0f - cutoffFrequency;
-        p = cutoffFrequency + 0.8f * cutoffFrequency * q;
+        //It's a kind of magiic...
+        q = 1.0f - currentCutoffFreq;
+        p = currentCutoffFreq + 0.8f * currentCutoffFreq * q;
         f = p + p - 1.0f;
-        q = resonance * (1.0f + 0.5f * q * (1.0f - q + 5.6f * q * q));
+        q = currentResonance * (1.0f + 0.5f * q * (1.0f - q + 5.6f * q * q));
     }
 
     /**
@@ -55,8 +54,9 @@ public class MoogVcfFilter2
      */
     public float filter(float input)
     {
-        float newCutoffFreq = baseCutoffFrequency * (1 + cutoffLfo.getNextValue());
-        setCutoffFrequency(newCutoffFreq);
+        currentCutoffFreq = cutoffFrequency.getValue();
+        currentResonance = resonance.getValue();
+        calculateCoefficients();
 
         input -= q * b[4];                          //feedback
         float t1 = b[1];
@@ -69,7 +69,7 @@ public class MoogVcfFilter2
         b[4] = b[4] - b[4] * b[4] * b[4] * 0.166667f;    //clipping
         b[0] = input;
 
-        float result = 0F;
+        float result;
         switch (mode)
         {
             case LOWPASS:
@@ -90,23 +90,26 @@ public class MoogVcfFilter2
 
     public float getCutoffFrequency()
     {
-        return cutoffFrequency;
+        return currentCutoffFreq;
     }
 
     public void setCutoffFrequency(float cutoffFrequency)
     {
-        this.cutoffFrequency = cutoffFrequency;
+        this.cutoffFrequency.setValue(cutoffFrequency);
+        currentCutoffFreq = this.cutoffFrequency.getValue();
         calculateCoefficients();
     }
 
     public float getResonance()
     {
-        return resonance;
+        return currentResonance;
     }
 
     public void setResonance(float resonance)
     {
-        this.resonance = resonance;
+        this.resonance.setValue(resonance);
+        currentResonance = this.resonance.getValue();
+        calculateCoefficients();
     }
 
     public FilterMode getMode()

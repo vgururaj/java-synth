@@ -1,4 +1,6 @@
-package andts.javasynth.generator;
+package andts.javasynth.effects;
+
+import andts.javasynth.generator.LfoGenerator;
 
 /**
  * User: Andrew
