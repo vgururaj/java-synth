@@ -1,0 +1,20 @@
+<configuration>
+    <appender name="rootFileAppender" class="ch.qos.logback.core.FileAppender">
+        <file>logs/full.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d [%thread] %-5level %class{12}#%method: %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="rootConsoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d [%thread] %-5level %class{12}#%method: %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="DEBUG">
+        <appender-ref ref="rootFileAppender"/>
+        <appender-ref ref="rootConsoleAppender"/>
+    </root>
+
+</configuration>
