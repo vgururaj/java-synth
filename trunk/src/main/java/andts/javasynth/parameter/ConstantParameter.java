@@ -1,6 +1,6 @@
 package andts.javasynth.parameter;
 
-import andts.javasynth.generator.GeneratorState;
+import andts.javasynth.generator.SoundGeneratorState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,12 +33,12 @@ public class ConstantParameter<T extends Number> implements Parameter<T>
     @Override
     public void update(Observable o, Object arg)
     {
-        if (arg.equals(GeneratorState.RUNNING))
+        if (arg.equals(SoundGeneratorState.RUNNING))
         {
             log.debug("Activating to {}", activeValue);
             value = activeValue;
         }
-        else if (arg.equals(GeneratorState.STOPPING))
+        else if (arg.equals(SoundGeneratorState.STOPPING))
         {
             log.debug("Passivating to {}", passiveValue);
             value = passiveValue;

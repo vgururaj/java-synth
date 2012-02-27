@@ -1,10 +1,14 @@
 package andts.javasynth;
 
 import andts.javasynth.effects.Gain;
+import andts.javasynth.generator.EnvelopeGenerator;
+import andts.javasynth.generator.LfoGenerator;
 import andts.javasynth.generator.SoundGenerator;
 import andts.javasynth.oscillator.Oscillator;
 import andts.javasynth.oscillator.SimpleOscillator;
 import andts.javasynth.parameter.ConstantParameter;
+import andts.javasynth.parameter.EnvelopeAutomatedParameter;
+import andts.javasynth.parameter.LfoAutomatedParameter;
 import andts.javasynth.waveform.SineWave;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +18,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 public class Player
 {
@@ -22,7 +25,7 @@ public class Player
 
     private static final int SAMPLE_RATE = 44100;
     private static final int BUFFER_SIZE = SAMPLE_RATE;
-    private static final int FRAME_BUFFER_SIZE = SAMPLE_RATE / 4;
+    private static final int FRAME_BUFFER_SIZE = BUFFER_SIZE / 4;
     private static final int CHANNELS = 2;
     private static final int SAMPLE_SIZE = 16;
     private static final int BITS_IN_BYTE = 8;
@@ -53,12 +56,26 @@ public class Player
         outputLine.open();
         outputLine.start();
 
-        Oscillator osc1 = new SimpleOscillator(new SineWave(), new ConstantParameter<>(500F, 0F), sampleRate);
-        Gain gain1 = new Gain(new ConstantParameter<>(0.1F, 0F));
+        EnvelopeGenerator envelope = new EnvelopeGenerator(SAMPLE_RATE, 1500, 1500, 0.5F, 1500);
+
+        LfoGenerator lfo = new LfoGenerator(
+                new SimpleOscillator(
+                        new SineWave(),
+                        new ConstantParameter<>(5F, 5F),
+                        sampleRate),
+                new Gain(new ConstantParameter<>(0.2F, 0.2F)));
+
+        LfoAutomatedParameter lfoFreq = new LfoAutomatedParameter(new ConstantParameter<>(100F, 0F), lfo);
+
+        Oscillator osc1 = new SimpleOscillator(new SineWave(), /*lfoFreq*/
+                new EnvelopeAutomatedParameter(
+                        lfoFreq, envelope), sampleRate);
+
+        Gain gain1 = new Gain(new ConstantParameter<>(0.1F, 0.1F));
 
         BlockingQueue<Integer> soundData = new ArrayBlockingQueue<>(BUFFER_SIZE);
 
-        SoundGenerator sg1 = new SoundGenerator(SAMPLE_SIZE, osc1, gain1);
+        SoundGenerator sg1 = new SoundGenerator(SAMPLE_SIZE, osc1, gain1, null);
         sg1.setOutputQueue(soundData);
         new Thread(sg1).start();
 
@@ -71,30 +88,30 @@ public class Player
             //sequencer :)
             if (iteration >= noteLen && iteration < 2 * noteLen)
             {
-                sg1.start(180F);
+//                sg1.start(180F);
                 log.debug("start note 2");
             }
             else if (iteration >= 2 * noteLen && iteration < 3 * noteLen)
             {
-                sg1.start(220F);
+//                sg1.start(220F);
                 log.debug("start note 3");
             }
             else if (iteration >= 3 * noteLen && iteration < 4 * noteLen)
             {
-                sg1.start(210F);
-//                sg1.stop();
-                log.debug("start note 4");
-//                log.debug("stop");
+//                sg1.start(210F);
+                sg1.stop();
+//                log.debug("start note 4");
+                log.debug("stop");
             }
             else if (iteration == 4 * noteLen)
             {
-                sg1.start(200F);
+                sg1.start(1000F);
                 log.debug("start note 1 again");
                 iteration = 0;
             }
             else /*if (iteration == 4 * noteLen)*/
             {
-                sg1.start(200F);
+                sg1.start(1000F);
                 log.debug("start note 1");
 //                iteration = 0;
             }
@@ -112,6 +129,5 @@ public class Player
 
             iteration++;
         }
-
     }
 }

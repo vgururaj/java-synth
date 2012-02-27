@@ -1,6 +1,6 @@
 package andts.javasynth.generator;
 
-public enum GeneratorState
+public enum SoundGeneratorState
 {
     /**
      * When generator receives a play event.
