@@ -14,6 +14,7 @@ import java.util.Observable;
 public class SimpleOscillator implements Oscillator
 {
     private static final Logger log = LoggerFactory.getLogger(SimpleOscillator.class);
+
     private Waveform wave;
     private Parameter<Float> freq;
     private final float sampleRate;

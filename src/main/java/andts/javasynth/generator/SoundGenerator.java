@@ -18,8 +18,8 @@ public class SoundGenerator extends OscillatedGenerator<Integer> implements Runn
     private SamplePreAmplifier amp;
     private MoogVcfFilter2 filter;
     private BlockingQueue<Integer> outputQueue;
-    private BlockingQueue<GeneratorState> eventQueue = new LinkedBlockingQueue<>();
-    private GeneratorState currentState = GeneratorState.IDLE;
+    private BlockingQueue<SoundGeneratorState> eventQueue = new LinkedBlockingQueue<>();
+    private SoundGeneratorState currentState = SoundGeneratorState.IDLE;
 
     /**
      * Creates new SoundGenerator
@@ -28,11 +28,15 @@ public class SoundGenerator extends OscillatedGenerator<Integer> implements Runn
      * @param osc        oscillator used to generate wave of some frequency
      * @param gain       used to amplify generated sample to some volume
      */
-    public SoundGenerator(int sampleSize, Oscillator osc, Gain gain)
+    public SoundGenerator(int sampleSize, Oscillator osc, Gain gain, EnvelopeGenerator volumeEnvelope)
     {
         super(osc, gain);
         this.amp = new SamplePreAmplifier(sampleSize);
-//        addObserver(osc);
+        if (volumeEnvelope != null)
+        {
+            volumeEnvelope.addObserver(this);
+        }
+        addObserver(osc);
         addObserver(gain);
     }
 
@@ -42,7 +46,7 @@ public class SoundGenerator extends OscillatedGenerator<Integer> implements Runn
         return amp.getAmplifiedValue(nextValue);
     }
 
-    public GeneratorState getCurrentState()
+    public SoundGeneratorState getCurrentState()
     {
         return currentState;
     }
@@ -54,32 +58,31 @@ public class SoundGenerator extends OscillatedGenerator<Integer> implements Runn
 
     public void start(float frequency)
     {
-        if (currentState.equals(GeneratorState.RUNNING)
-            && getOsc().getFrequency() == frequency)
+        if (currentState.equals(SoundGeneratorState.RUNNING))
         {
             return;
         }
 
         setChanged();
 
-        getOsc().reset();
+//        getOsc().reset();
         getOsc().setFrequency(frequency);
 
-        notifyObservers(GeneratorState.RUNNING);
-        eventQueue.add(GeneratorState.RUNNING);
+        notifyObservers(SoundGeneratorState.RUNNING);
+        eventQueue.add(SoundGeneratorState.RUNNING);
     }
 
     public void stop()
     {
-        if (currentState.equals(GeneratorState.STOPPING))
+        if (currentState.equals(SoundGeneratorState.STOPPING))
         {
             return;
         }
 
         log.debug("Send STOPPING");
         setChanged();
-        notifyObservers(GeneratorState.STOPPING);
-        eventQueue.add(GeneratorState.STOPPING);
+        notifyObservers(SoundGeneratorState.STOPPING);
+        eventQueue.add(SoundGeneratorState.STOPPING);
     }
 
     @Override
@@ -87,7 +90,7 @@ public class SoundGenerator extends OscillatedGenerator<Integer> implements Runn
     {
         while (!Thread.currentThread().isInterrupted())
         {
-            GeneratorState newState = eventQueue.poll();
+            SoundGeneratorState newState = eventQueue.poll();
 
             if (newState != null && newState != currentState)
             {
@@ -96,11 +99,11 @@ public class SoundGenerator extends OscillatedGenerator<Integer> implements Runn
             }
             try
             {
-                if (currentState.equals(GeneratorState.RUNNING) || currentState.equals(GeneratorState.STOPPING))
+                if (currentState.equals(SoundGeneratorState.RUNNING) || currentState.equals(SoundGeneratorState.STOPPING))
                 {
                     outputQueue.put(getNextValue());
                 }
-                else if (currentState.equals(GeneratorState.SILENT))
+                else if (currentState.equals(SoundGeneratorState.SILENT))
                 {
                     outputQueue.put(0);
                 }
@@ -121,9 +124,9 @@ public class SoundGenerator extends OscillatedGenerator<Integer> implements Runn
     @Override
     public void update(Observable o, Object arg)
     {
-        if (arg.equals(GeneratorState.SILENT))
+        /*if (arg.equals(SoundGeneratorState.SILENT))
         {
-            currentState = GeneratorState.SILENT;
-        }
+            currentState = SoundGeneratorState.SILENT;
+        }*/
     }
 }
