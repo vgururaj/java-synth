@@ -4,6 +4,9 @@ import andts.javasynth.generator.EnvelopeGenerator;
 
 import java.util.Observable;
 
+/**
+ * A parameter that is automated by an envelope generator.
+ */
 public class EnvelopeAutomatedParameter extends AutomatedParameter<Float>
 {
     EnvelopeGenerator env;

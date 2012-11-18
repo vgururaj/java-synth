@@ -9,7 +9,7 @@ import java.util.Observable;
  * This class caches a value from the parameter and returns it to several users.
  * Only when all users ask for their values, next value of parameter will be calculated.
  */
-public class ParameterBarrier<T> implements Parameter<T>
+public class ParameterBarrier<T extends Number> implements Parameter<T>
 {
     private T cachedValue;
     private Parameter<T> baseParam;

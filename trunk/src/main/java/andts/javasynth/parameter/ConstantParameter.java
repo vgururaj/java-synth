@@ -6,6 +6,11 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Observable;
 
+/**
+ * A parameter that always returns the same value. Has two states - active and passive, each may have a distinct value.
+ * Passive value is used when the sound generator is not running.
+ * @param <T> Type of value
+ */
 public class ConstantParameter<T extends Number> implements Parameter<T>
 {
     private static final Logger log = LoggerFactory.getLogger(ConstantParameter.class);
@@ -18,6 +23,11 @@ public class ConstantParameter<T extends Number> implements Parameter<T>
         this.value = activeValue;
         this.activeValue = activeValue;
         this.passiveValue = passiveValue;
+    }
+
+    public ConstantParameter(T value)
+    {
+        this(value, value);
     }
 
     public T getValue()

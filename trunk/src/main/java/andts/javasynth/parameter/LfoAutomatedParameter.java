@@ -2,6 +2,9 @@ package andts.javasynth.parameter;
 
 import andts.javasynth.generator.LfoGenerator;
 
+/**
+ * A parameter that is automated by an LFO generator.
+ */
 public class LfoAutomatedParameter extends AutomatedParameter<Float>
 {
     private LfoGenerator lfo;

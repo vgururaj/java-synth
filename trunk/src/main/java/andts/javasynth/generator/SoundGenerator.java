@@ -3,6 +3,7 @@ package andts.javasynth.generator;
 import andts.javasynth.effects.Gain;
 import andts.javasynth.effects.MoogVcfFilter2;
 import andts.javasynth.oscillator.Oscillator;
+import andts.javasynth.parameter.ConstantParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,9 +25,10 @@ public class SoundGenerator extends OscillatedGenerator<Integer> implements Runn
     /**
      * Creates new SoundGenerator
      *
-     * @param sampleSize size of generated sample in bits
-     * @param osc        oscillator used to generate wave of some frequency
-     * @param gain       used to amplify generated sample to some volume
+     * @param sampleSize     size of generated sample in bits
+     * @param osc            oscillator used to generate wave of some frequency
+     * @param gain           used to amplify generated sample to some volume
+     * @param volumeEnvelope asd
      */
     public SoundGenerator(int sampleSize, Oscillator osc, Gain gain, EnvelopeGenerator volumeEnvelope)
     {
@@ -38,11 +40,16 @@ public class SoundGenerator extends OscillatedGenerator<Integer> implements Runn
         }
         addObserver(osc);
         addObserver(gain);
+        this.filter = new MoogVcfFilter2(
+                new ConstantParameter<>(0.05F),
+                new ConstantParameter<>(.3F),
+                MoogVcfFilter2.FilterType.LOWPASS);
     }
 
     public Integer getNextValue()
     {
-        float nextValue = getGain().getAmplifiedValue(getOsc().getNextValue());
+        float nextValue = filter.filter(getGain().getAmplifiedValue(getOsc().getNextValue()));
+//        float nextValue = getGain().getAmplifiedValue(getOsc().getNextValue());
         return amp.getAmplifiedValue(nextValue);
     }
 
@@ -65,7 +72,6 @@ public class SoundGenerator extends OscillatedGenerator<Integer> implements Runn
 
         setChanged();
 
-//        getOsc().reset();
         getOsc().setFrequency(frequency);
 
         notifyObservers(SoundGeneratorState.RUNNING);
