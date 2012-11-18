@@ -9,7 +9,10 @@ import andts.javasynth.oscillator.SimpleOscillator;
 import andts.javasynth.parameter.ConstantParameter;
 import andts.javasynth.parameter.EnvelopeAutomatedParameter;
 import andts.javasynth.parameter.LfoAutomatedParameter;
+import andts.javasynth.waveform.SawtoothWave;
 import andts.javasynth.waveform.SineWave;
+import andts.javasynth.waveform.SquareWave;
+import andts.javasynth.waveform.TriangleWave;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,43 +38,30 @@ public class Player
         AudioFormat audioFormat;
         float sampleRate = SAMPLE_RATE;
 
-        log.debug("Testing");
-
         Mixer.Info[] mixerInfos = AudioSystem.getMixerInfo();
-        log.debug("mixerInfos = " + Arrays.deepToString(mixerInfos));
-//        System.out.println("mixerInfos[0] = " + mixerInfos[0]);
-
-//        Mixer mainMixer = AudioSystem.getMixer(mixerInfos[0]);
-//        System.out.println("mainMixer = " + mainMixer);
-//        System.out.println("mainMixer.sourceLines = " + Arrays.deepToString(mainMixer.getTargetLines()));
-
-        audioFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, sampleRate, SAMPLE_SIZE, CHANNELS, (CHANNELS * SAMPLE_SIZE) / BITS_IN_BYTE, sampleRate, false);
-//        DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
-//        System.out.println("mainMixer.getMaxLines = " + mainMixer.getMaxLines(info));
-
+        audioFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, sampleRate, SAMPLE_SIZE, CHANNELS,
+                                      (CHANNELS * SAMPLE_SIZE) / BITS_IN_BYTE, sampleRate, false);
         SourceDataLine outputLine = AudioSystem.getSourceDataLine(audioFormat, mixerInfos[0]);
-
-        log.debug("outputLine = " + outputLine.toString());
-
         outputLine.open();
         outputLine.start();
 
-        EnvelopeGenerator envelope = new EnvelopeGenerator(SAMPLE_RATE, 1500, 1500, 0.5F, 1500);
+        EnvelopeGenerator envelope = new EnvelopeGenerator(SAMPLE_RATE, 5000, 5000, 0.5F, 5000);
 
         LfoGenerator lfo = new LfoGenerator(
-                new SimpleOscillator(
-                        new SineWave(),
-                        new ConstantParameter<>(5F, 5F),
-                        sampleRate),
-                new Gain(new ConstantParameter<>(0.2F, 0.2F)));
+            new SimpleOscillator(
+                new SawtoothWave(),
+                new ConstantParameter<>(5F),
+                sampleRate),
+            new Gain(new ConstantParameter<>(-0.3F)));
 
-        LfoAutomatedParameter lfoFreq = new LfoAutomatedParameter(new ConstantParameter<>(100F, 0F), lfo);
+        LfoAutomatedParameter lfoFreq = new LfoAutomatedParameter(new ConstantParameter<>(500F, 0F), lfo);
 
-        Oscillator osc1 = new SimpleOscillator(new SineWave(), /*lfoFreq*/
-                new EnvelopeAutomatedParameter(
-                        lfoFreq, envelope), sampleRate);
+        Oscillator osc1 =
+            new SimpleOscillator(
+                new TriangleWave(),
+                new EnvelopeAutomatedParameter(lfoFreq, envelope), sampleRate);
 
-        Gain gain1 = new Gain(new ConstantParameter<>(0.1F, 0.1F));
+        Gain gain1 = new Gain(new ConstantParameter<>(0.7F));
 
         BlockingQueue<Integer> soundData = new ArrayBlockingQueue<>(BUFFER_SIZE);
 
@@ -80,45 +70,13 @@ public class Player
         new Thread(sg1).start();
 
         byte[] oscBuffer = new byte[BUFFER_SIZE];
-        long iteration = 0;
-        int noteLen = 7;
+        sg1.start(540F);
+
         //noinspection InfiniteLoopStatement
         while (true)
         {
-            //sequencer :)
-            if (iteration >= noteLen && iteration < 2 * noteLen)
-            {
-//                sg1.start(180F);
-                log.debug("start note 2");
-            }
-            else if (iteration >= 2 * noteLen && iteration < 3 * noteLen)
-            {
-//                sg1.start(220F);
-                log.debug("start note 3");
-            }
-            else if (iteration >= 3 * noteLen && iteration < 4 * noteLen)
-            {
-//                sg1.start(210F);
-                sg1.stop();
-//                log.debug("start note 4");
-                log.debug("stop");
-            }
-            else if (iteration == 4 * noteLen)
-            {
-                sg1.start(1000F);
-                log.debug("start note 1 again");
-                iteration = 0;
-            }
-            else /*if (iteration == 4 * noteLen)*/
-            {
-                sg1.start(1000F);
-                log.debug("start note 1");
-//                iteration = 0;
-            }
-
             for (int i = 0; i < FRAME_BUFFER_SIZE; ++i)
             {
-//                Integer nextValue = sg1.getNextValue();
                 Integer nextValue = soundData.take();
                 byte[] monoFrame = Util.chop(nextValue);
                 System.arraycopy(monoFrame, 0, oscBuffer, i * 4, 2); //left channel
@@ -126,8 +84,6 @@ public class Player
             }
 
             outputLine.write(oscBuffer, 0, BUFFER_SIZE);
-
-            iteration++;
         }
     }
 }

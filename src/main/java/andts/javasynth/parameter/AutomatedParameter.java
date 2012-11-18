@@ -2,7 +2,11 @@ package andts.javasynth.parameter;
 
 import java.util.Observable;
 
-public abstract class AutomatedParameter<T> implements Parameter<T>
+/**
+ * A base class for automated parameters (i.e. those that can change the value bt themselves)
+ * @param <T>
+ */
+public abstract class AutomatedParameter<T extends Number> implements Parameter<T>
 {
     private Parameter<T> baseParam;
 

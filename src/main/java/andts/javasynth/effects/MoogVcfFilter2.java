@@ -20,13 +20,19 @@ public class MoogVcfFilter2
     private Parameter<Float> resonance;
     private float currentResonance;
 
-    private FilterMode mode;
+    private FilterType type;
 
-    public MoogVcfFilter2(Parameter<Float> cutoffFrequency, Parameter<Float> resonance, FilterMode mode)
+    /**
+     * Create new Filter with specified parameters.
+     * @param cutoffFrequency cutoff frequency in Hz [0..sample_rate/2]
+     * @param resonance resonance of the filter [0..3]
+     * @param type type of the filter
+     */
+    public MoogVcfFilter2(Parameter<Float> cutoffFrequency, Parameter<Float> resonance, FilterType type)
     {
         this.cutoffFrequency = cutoffFrequency;
         this.resonance = resonance;
-        this.mode = mode;
+        this.type = type;
         currentCutoffFreq = cutoffFrequency.getValue();
         currentResonance = resonance.getValue();
 
@@ -70,7 +76,7 @@ public class MoogVcfFilter2
         b[0] = input;
 
         float result;
-        switch (mode)
+        switch (type)
         {
             case LOWPASS:
                 result = b[4];
@@ -82,7 +88,7 @@ public class MoogVcfFilter2
                 result = 3.0F * (b[3] - b[4]);
                 break;
             default:
-                throw new JavaSynthException("Unknown mode set for filter!");
+                throw new JavaSynthException("Unknown type set for filter!");
         }
 
         return result;
@@ -112,17 +118,17 @@ public class MoogVcfFilter2
         calculateCoefficients();
     }
 
-    public FilterMode getMode()
+    public FilterType getType()
     {
-        return mode;
+        return type;
     }
 
-    public void setMode(FilterMode mode)
+    public void setType(FilterType type)
     {
-        this.mode = mode;
+        this.type = type;
     }
 
-    public static enum FilterMode
+    public static enum FilterType
     {
         LOWPASS, HIGHPASS, BANDPASS
     }
