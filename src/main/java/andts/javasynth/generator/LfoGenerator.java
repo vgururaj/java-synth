@@ -4,6 +4,8 @@ import andts.javasynth.JavaSynthException;
 import andts.javasynth.effects.Gain;
 import andts.javasynth.oscillator.Oscillator;
 
+import java.util.Observable;
+
 /**
  * Generates low-frequency waveforms, used to automatically change values of sound generators
  */
@@ -22,5 +24,12 @@ public class LfoGenerator extends OscillatedGenerator<Float>
     public Float getNextValue()
     {
         return getGain().getAmplifiedValue(getOsc().getNextValue());
+    }
+
+    @Override
+    public void update(Observable o, Object arg)
+    {
+        getOsc().update(o, arg);
+        getGain().update(o, arg);
     }
 }

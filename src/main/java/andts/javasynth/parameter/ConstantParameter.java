@@ -38,6 +38,8 @@ public class ConstantParameter<T extends Number> implements Parameter<T>
     public void setValue(T value)
     {
         this.value = value;
+        this.activeValue = value;
+        this.passiveValue = value;
     }
 
     @Override
