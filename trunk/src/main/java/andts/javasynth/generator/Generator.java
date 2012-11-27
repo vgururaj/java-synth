@@ -1,6 +1,8 @@
 package andts.javasynth.generator;
 
-public interface Generator<T>
+import java.util.Observer;
+
+public interface Generator<T> extends Observer
 {
     public T getNextValue();
 }

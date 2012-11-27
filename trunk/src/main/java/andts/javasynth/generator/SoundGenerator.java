@@ -48,8 +48,8 @@ public class SoundGenerator extends OscillatedGenerator<Integer> implements Runn
 
     public Integer getNextValue()
     {
-        float nextValue = filter.filter(getGain().getAmplifiedValue(getOsc().getNextValue()));
-//        float nextValue = getGain().getAmplifiedValue(getOsc().getNextValue());
+//        float nextValue = filter.filter(getGain().getAmplifiedValue(getOsc().getNextValue()));
+        float nextValue = getGain().getAmplifiedValue(getOsc().getNextValue());
         return amp.getAmplifiedValue(nextValue);
     }
 
@@ -76,6 +76,7 @@ public class SoundGenerator extends OscillatedGenerator<Integer> implements Runn
 
         notifyObservers(SoundGeneratorState.RUNNING);
         eventQueue.add(SoundGeneratorState.RUNNING);
+        outputQueue.clear();
     }
 
     public void stop()
@@ -89,6 +90,7 @@ public class SoundGenerator extends OscillatedGenerator<Integer> implements Runn
         setChanged();
         notifyObservers(SoundGeneratorState.STOPPING);
         eventQueue.add(SoundGeneratorState.STOPPING);
+        outputQueue.clear();
     }
 
     @Override

@@ -26,6 +26,7 @@ public class EnvelopeAutomatedParameter extends AutomatedParameter<Float>
     @Override
     public void update(Observable o, Object arg)
     {
+        super.update(o, arg);
         env.update(o, arg);
     }
 }

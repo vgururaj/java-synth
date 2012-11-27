@@ -17,7 +17,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sound.sampled.*;
+import java.io.Console;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -45,32 +47,72 @@ public class Player
         outputLine.open();
         outputLine.start();
 
-        EnvelopeGenerator envelope = new EnvelopeGenerator(SAMPLE_RATE, 5000, 5000, 0.5F, 5000);
+        EnvelopeGenerator envelope = new EnvelopeGenerator(SAMPLE_RATE, 2000, 2000, 0.5F, 2000);
+        /*LfoGenerator lfo = new LfoGenerator(
+                new SimpleOscillator(
+                        new SawtoothWave(),
+                        new ConstantParameter<>(5F),
+                        sampleRate),
+                new Gain(new ConstantParameter<>(-0.3F)));
+        LfoAutomatedParameter lfoFreq = new LfoAutomatedParameter(new ConstantParameter<>(500F, 0F), lfo);*/
 
-        LfoGenerator lfo = new LfoGenerator(
-            new SimpleOscillator(
-                new SawtoothWave(),
-                new ConstantParameter<>(5F),
-                sampleRate),
-            new Gain(new ConstantParameter<>(-0.3F)));
+        SimpleOscillator lfoOsc = new SimpleOscillator(new SquareWave(),
+                                                       new EnvelopeAutomatedParameter(new ConstantParameter<>(30f), envelope),
+                                                       SAMPLE_RATE);
 
-        LfoAutomatedParameter lfoFreq = new LfoAutomatedParameter(new ConstantParameter<>(500F, 0F), lfo);
+        Gain lfoAmplitude = new Gain(new ConstantParameter<>(0.2f));
+        LfoGenerator lfoGenerator = new LfoGenerator(lfoOsc, lfoAmplitude);
+        LfoAutomatedParameter oscFreq = new LfoAutomatedParameter(new ConstantParameter<>(0F), lfoGenerator);
+        Oscillator osc1 = new SimpleOscillator(new TriangleWave(), oscFreq, sampleRate);
 
-        Oscillator osc1 =
-            new SimpleOscillator(
-                new TriangleWave(),
-                new EnvelopeAutomatedParameter(lfoFreq, envelope), sampleRate);
-
-        Gain gain1 = new Gain(new ConstantParameter<>(0.7F));
+        Gain gain1 = new Gain(new ConstantParameter<>(0.1F, 0f));
 
         BlockingQueue<Integer> soundData = new ArrayBlockingQueue<>(BUFFER_SIZE);
 
-        SoundGenerator sg1 = new SoundGenerator(SAMPLE_SIZE, osc1, gain1, null);
+        final SoundGenerator sg1 = new SoundGenerator(SAMPLE_SIZE, osc1, gain1, null);
         sg1.setOutputQueue(soundData);
         new Thread(sg1).start();
 
         byte[] oscBuffer = new byte[BUFFER_SIZE];
-        sg1.start(540F);
+
+        new Thread(new Runnable()
+        {
+            char lastChar = ' ';
+
+            @Override
+            public void run()
+            {
+                while (!Thread.interrupted())
+                {
+                    try
+                    {
+                        char input = (char) System.in.read();
+                        log.debug("got key: {}", input);
+                        if (input == 10)
+                        {
+                            continue;
+                        }
+
+                        if (lastChar == input)
+                        {
+                            sg1.stop();
+                            lastChar = input;
+                            log.debug("stop!!!");
+                        }
+                        else
+                        {
+                            sg1.start(440f + input*10);
+                            lastChar = input;
+                            log.debug("start!!!");
+                        }
+                    }
+                    catch (IOException e)
+                    {
+                        log.debug("got exception while reading keys: {}", e);
+                    }
+                }
+            }
+        }).start();
 
         //noinspection InfiniteLoopStatement
         while (true)
