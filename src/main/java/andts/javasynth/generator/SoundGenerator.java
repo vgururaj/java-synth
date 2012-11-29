@@ -21,6 +21,7 @@ public class SoundGenerator extends OscillatedGenerator<Integer> implements Runn
     private BlockingQueue<Integer> outputQueue;
     private BlockingQueue<SoundGeneratorState> eventQueue = new LinkedBlockingQueue<>();
     private SoundGeneratorState currentState = SoundGeneratorState.IDLE;
+    private EnvelopeGenerator volumeEnvelope;
 
     /**
      * Creates new SoundGenerator
@@ -34,22 +35,24 @@ public class SoundGenerator extends OscillatedGenerator<Integer> implements Runn
     {
         super(osc, gain);
         this.amp = new SamplePreAmplifier(sampleSize);
+        this.volumeEnvelope = volumeEnvelope;
         if (volumeEnvelope != null)
         {
             volumeEnvelope.addObserver(this);
         }
         addObserver(osc);
         addObserver(gain);
+        addObserver(volumeEnvelope);
         this.filter = new MoogVcfFilter2(
-                new ConstantParameter<>(0.05F),
-                new ConstantParameter<>(.3F),
-                MoogVcfFilter2.FilterType.LOWPASS);
+            new ConstantParameter<>(0.05F),
+            new ConstantParameter<>(.3F),
+            MoogVcfFilter2.FilterType.LOWPASS);
     }
 
     public Integer getNextValue()
     {
-//        float nextValue = filter.filter(getGain().getAmplifiedValue(getOsc().getNextValue()));
-        float nextValue = getGain().getAmplifiedValue(getOsc().getNextValue());
+        float nextValue = filter.filter(getGain().getAmplifiedValue(getOsc().getNextValue() * volumeEnvelope.getNextValue()));
+//        float nextValue = getGain().getAmplifiedValue(getOsc().getNextValue() * volumeEnvelope.getNextValue());
         return amp.getAmplifiedValue(nextValue);
     }
 
@@ -90,7 +93,6 @@ public class SoundGenerator extends OscillatedGenerator<Integer> implements Runn
         setChanged();
         notifyObservers(SoundGeneratorState.STOPPING);
         eventQueue.add(SoundGeneratorState.STOPPING);
-        outputQueue.clear();
     }
 
     @Override
@@ -132,9 +134,9 @@ public class SoundGenerator extends OscillatedGenerator<Integer> implements Runn
     @Override
     public void update(Observable o, Object arg)
     {
-        /*if (arg.equals(SoundGeneratorState.SILENT))
+        if (arg.equals(EnvelopeGenerator.EnvelopeState.IDLE))
         {
             currentState = SoundGeneratorState.SILENT;
-        }*/
+        }
     }
 }
