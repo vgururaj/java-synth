@@ -7,20 +7,14 @@ import andts.javasynth.generator.SoundGenerator;
 import andts.javasynth.oscillator.Oscillator;
 import andts.javasynth.oscillator.SimpleOscillator;
 import andts.javasynth.parameter.ConstantParameter;
-import andts.javasynth.parameter.EnvelopeAutomatedParameter;
 import andts.javasynth.parameter.LfoAutomatedParameter;
-import andts.javasynth.waveform.SawtoothWave;
 import andts.javasynth.waveform.SineWave;
 import andts.javasynth.waveform.SquareWave;
-import andts.javasynth.waveform.TriangleWave;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sound.sampled.*;
-import java.io.Console;
 import java.io.IOException;
-import java.io.Reader;
-import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -47,30 +41,24 @@ public class Player
         outputLine.open();
         outputLine.start();
 
-        EnvelopeGenerator envelope = new EnvelopeGenerator(SAMPLE_RATE, 2000, 2000, 0.5F, 2000);
-        /*LfoGenerator lfo = new LfoGenerator(
-                new SimpleOscillator(
-                        new SawtoothWave(),
-                        new ConstantParameter<>(5F),
-                        sampleRate),
-                new Gain(new ConstantParameter<>(-0.3F)));
-        LfoAutomatedParameter lfoFreq = new LfoAutomatedParameter(new ConstantParameter<>(500F, 0F), lfo);*/
 
-        SimpleOscillator lfoOsc = new SimpleOscillator(new SquareWave(),
-                                                       new EnvelopeAutomatedParameter(new ConstantParameter<>(30f), envelope),
-                                                       SAMPLE_RATE);
 
+        EnvelopeGenerator envelope = new EnvelopeGenerator(SAMPLE_RATE, 100, 500, 0.2F, 10);
+
+        SimpleOscillator lfoOsc = new SimpleOscillator(new SineWave(), new ConstantParameter<>(3f), SAMPLE_RATE);
         Gain lfoAmplitude = new Gain(new ConstantParameter<>(0.2f));
         LfoGenerator lfoGenerator = new LfoGenerator(lfoOsc, lfoAmplitude);
-        LfoAutomatedParameter oscFreq = new LfoAutomatedParameter(new ConstantParameter<>(0F), lfoGenerator);
-        Oscillator osc1 = new SimpleOscillator(new TriangleWave(), oscFreq, sampleRate);
 
-        Gain gain1 = new Gain(new ConstantParameter<>(0.1F, 0f));
+        LfoAutomatedParameter oscFreq = new LfoAutomatedParameter(new ConstantParameter<>(0F), lfoGenerator);
+
+        Oscillator osc1 = new SimpleOscillator(new SquareWave(), oscFreq, sampleRate);
+        Gain gain1 = new Gain(new ConstantParameter<>(0.1F));
 
         BlockingQueue<Integer> soundData = new ArrayBlockingQueue<>(BUFFER_SIZE);
 
-        final SoundGenerator sg1 = new SoundGenerator(SAMPLE_SIZE, osc1, gain1, null);
+        final SoundGenerator sg1 = new SoundGenerator(SAMPLE_SIZE, osc1, gain1, envelope);
         sg1.setOutputQueue(soundData);
+
         new Thread(sg1).start();
 
         byte[] oscBuffer = new byte[BUFFER_SIZE];
@@ -78,6 +66,7 @@ public class Player
         new Thread(new Runnable()
         {
             char lastChar = ' ';
+            boolean running = true;
 
             @Override
             public void run()
@@ -88,27 +77,29 @@ public class Player
                     {
                         char input = (char) System.in.read();
                         log.debug("got key: {}", input);
-                        if (input == 10)
+                        if (input == '\n')
                         {
                             continue;
                         }
 
-                        if (lastChar == input)
+                        if (lastChar == input && running)
                         {
                             sg1.stop();
                             lastChar = input;
                             log.debug("stop!!!");
+                            running = false;
                         }
                         else
                         {
-                            sg1.start(440f + input*10);
+                            sg1.start(input*2);
                             lastChar = input;
                             log.debug("start!!!");
+                            running = true;
                         }
                     }
                     catch (IOException e)
                     {
-                        log.debug("got exception while reading keys: {}", e);
+                        log.debug("got exception while reading keys:", e);
                     }
                 }
             }

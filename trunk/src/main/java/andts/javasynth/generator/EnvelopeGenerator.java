@@ -81,6 +81,8 @@ public class EnvelopeGenerator extends Observable implements Generator<Float>, O
                 log.debug("DECAY!");
                 currentState = EnvelopeState.DECAY;
                 currentSample = 0;
+                setChanged();
+                notifyObservers(EnvelopeState.DECAY);
             }
 
 //            log.debug("currentLevel = {}", currentLevel);
@@ -96,6 +98,8 @@ public class EnvelopeGenerator extends Observable implements Generator<Float>, O
                 log.debug("SUSTAIN!");
                 currentState = EnvelopeState.SUSTAIN;
                 currentSample = 0;
+                setChanged();
+                notifyObservers(EnvelopeState.SUSTAIN);
             }
 
 //            log.debug("currentLevel = {}", currentLevel);
@@ -118,6 +122,8 @@ public class EnvelopeGenerator extends Observable implements Generator<Float>, O
                 log.debug("IDLE!");
                 currentState = EnvelopeState.IDLE;
                 currentSample = 0;
+                setChanged();
+                notifyObservers(EnvelopeState.IDLE);
             }
 
 //            log.debug("currentLevel = {}", currentLevel);
@@ -154,7 +160,7 @@ public class EnvelopeGenerator extends Observable implements Generator<Float>, O
         currentLevel = 0F;
     }
 
-    private static enum EnvelopeState
+    public static enum EnvelopeState
     {
         ATTACK, DECAY, SUSTAIN, RELEASE, IDLE
     }
