@@ -14,6 +14,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sound.sampled.*;
+import javax.swing.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -42,11 +45,10 @@ public class Player
         outputLine.start();
 
 
+        EnvelopeGenerator envelope = new EnvelopeGenerator(SAMPLE_RATE, 100, 500, 0.1F, 100);
 
-        EnvelopeGenerator envelope = new EnvelopeGenerator(SAMPLE_RATE, 100, 500, 0.2F, 10);
-
-        SimpleOscillator lfoOsc = new SimpleOscillator(new SineWave(), new ConstantParameter<>(3f), SAMPLE_RATE);
-        Gain lfoAmplitude = new Gain(new ConstantParameter<>(0.2f));
+        SimpleOscillator lfoOsc = new SimpleOscillator(new SineWave(), new ConstantParameter<>(300f), SAMPLE_RATE);
+        Gain lfoAmplitude = new Gain(new ConstantParameter<>(0.1f));
         LfoGenerator lfoGenerator = new LfoGenerator(lfoOsc, lfoAmplitude);
 
         LfoAutomatedParameter oscFreq = new LfoAutomatedParameter(new ConstantParameter<>(0F), lfoGenerator);
@@ -63,47 +65,29 @@ public class Player
 
         byte[] oscBuffer = new byte[BUFFER_SIZE];
 
-        new Thread(new Runnable()
+        JFrame frame = new JFrame("Test");
+        frame.setVisible(true);
+        frame.setSize(500, 200);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.addKeyListener(new KeyListener()
         {
-            char lastChar = ' ';
-            boolean running = true;
+            @Override
+            public void keyTyped(KeyEvent e)
+            {
+            }
 
             @Override
-            public void run()
+            public void keyPressed(KeyEvent e)
             {
-                while (!Thread.interrupted())
-                {
-                    try
-                    {
-                        char input = (char) System.in.read();
-                        log.debug("got key: {}", input);
-                        if (input == '\n')
-                        {
-                            continue;
-                        }
-
-                        if (lastChar == input && running)
-                        {
-                            sg1.stop();
-                            lastChar = input;
-                            log.debug("stop!!!");
-                            running = false;
-                        }
-                        else
-                        {
-                            sg1.start(input*2);
-                            lastChar = input;
-                            log.debug("start!!!");
-                            running = true;
-                        }
-                    }
-                    catch (IOException e)
-                    {
-                        log.debug("got exception while reading keys:", e);
-                    }
-                }
+                sg1.start(e.getKeyCode() * 5);
             }
-        }).start();
+
+            @Override
+            public void keyReleased(KeyEvent e)
+            {
+                sg1.stop();
+            }
+        });
 
         //noinspection InfiniteLoopStatement
         while (true)
@@ -118,5 +102,7 @@ public class Player
 
             outputLine.write(oscBuffer, 0, BUFFER_SIZE);
         }
+
+
     }
 }
