@@ -75,6 +75,7 @@ public class SoundGenerator extends OscillatedGenerator<Integer> implements Runn
 
         setChanged();
 
+        getOsc().reset();
         getOsc().setFrequency(frequency);
 
         notifyObservers(SoundGeneratorState.RUNNING);
@@ -89,6 +90,7 @@ public class SoundGenerator extends OscillatedGenerator<Integer> implements Runn
             return;
         }
 
+        outputQueue.clear();
         log.debug("Send STOPPING");
         setChanged();
         notifyObservers(SoundGeneratorState.STOPPING);
@@ -137,6 +139,7 @@ public class SoundGenerator extends OscillatedGenerator<Integer> implements Runn
         if (arg.equals(EnvelopeGenerator.EnvelopeState.IDLE))
         {
             currentState = SoundGeneratorState.SILENT;
+            log.debug("currentState = {}", currentState);
         }
     }
 }
